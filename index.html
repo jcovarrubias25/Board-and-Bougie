@@ -19,13 +19,13 @@
             display: flex; 
             flex-direction: column; 
             padding: 8px;
-            gap: 2px; /* Tightest vertical flow */
+            gap: 2px;
         }
         
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; }
-        .story-box h2 { font-size: 36px; color: var(--primary); }
-        .story-box p { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 700; line-height: 1.4; }
+        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; box-shadow: 0 20px 0 rgba(0,0,0,0.2); }
+        .story-box h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
+        .story-box p { font-family: 'Quicksand', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.4; color: #444; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #eee; font-size: 14px; }
 
@@ -69,12 +69,10 @@
             border-radius: 18px; 
             border: 2px solid #eee;
         }
-        /* Bigger Ingredient Icons */
         .item { font-size: 36px; cursor: pointer; user-select: none; text-align: center; }
 
-        .big-btn { background: var(--primary); color: white; border: none; padding: 25px; border-radius: 60px; font-size: 32px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; font-family: 'Fredoka One'; margin-top: 20px; }
+        .big-btn { background: var(--primary); color: white; border: none; padding: 25px; border-radius: 60px; font-size: 28px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; font-family: 'Fredoka One'; margin-top: 15px; }
         
-        /* Moved up Snugly */
         button#serve-btn { 
             background: var(--primary); 
             color: white; 
@@ -160,11 +158,23 @@
     const chefMayaTag = '<span style="font-size:80px">👩🏾‍🍳</span><br><span style="color:var(--primary); font-size: 24px;">Chef Maya</span>';
 
     const milestones = {
-        0: "I'm finally moving my business from my kitchen table to a real storefront. Let's make this work!",
-        10: "Word is spreading! We just got featured in the local paper.",
-        20: "I've invested in a better fridge. Now we can offer specialty items!",
-        50: "Maya is now a local celebrity!"
+        0: "Welcome! I'm Maya. I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!",
+        1: "Perfect start! Every board we sell brings us closer to getting that neon sign for the window.",
+        2: "The smell of fresh bread is starting to fill the shop. People are peering in the windows!",
+        3: "A local food blogger just walked in. No pressure, right?",
+        4: "Whew! They loved it. My phone won't stop buzzing with notifications.",
+        5: "Business is picking up! I might need to order more fancy honey jars soon.",
+        10: "Milestone! We just got featured in the local paper. The 'Maya Special' is a hit!",
+        20: "I've finally saved enough for a top-of-the-line walk-in fridge. Look at all this space!",
+        50: "Can you believe it? Maya's Board Shop is now a local celebrity hotspot!"
     };
+
+    const fillerStories = [
+        "That cheese pairing was genius!", "The customer said this was the best bread they've had all year.",
+        "I love the way you arranged those fruits.", "We're becoming the talk of the neighborhood!",
+        "Quick work! My grandmother always said speed is the secret ingredient.",
+        "That garnish really made the board pop!", "The meats today are particularly fresh, good choice."
+    ];
 
     const pantryItems = [
         {e:'🧀', t:'cheese'}, {e:'🧈', t:'cheese'}, {e:'🥚', t:'egg'}, {e:'🥩', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🍗', t:'meat'}, {e:'🍖', t:'meat'},
@@ -186,13 +196,16 @@
         const overlay = document.getElementById('story-overlay');
         const content = document.getElementById('story-content');
         overlay.style.display = 'flex';
+        
         if (mode === "prologue") {
-            content.innerHTML = `${chefMayaTag}<h2>The Storefront</h2><p>${milestones[0]}</p><button class="big-btn" onclick="startAudio(); showStory('level')">START</button>`;
+            content.innerHTML = `${chefMayaTag}<h2>Grand Opening</h2><p>${milestones[0]}</p><button class="big-btn" onclick="startAudio(); showStory('level')">OPEN SHOP</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `<h2>Closed</h2><p>Final Earnings: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RESTART</button>`;
+            content.innerHTML = `<h2>Closing Time</h2><p>Maya: 'We did our best today. Let's try again tomorrow!'<br><br>Final Earnings: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RESTART JOURNEY</button>`;
         } else if (mode === "success") {
-            let mile = milestones[currentLevel] ? `<p><b>Milestone:</b> ${milestones[currentLevel]}</p>` : "";
-            content.innerHTML = `${chefMayaTag}<h2>Great Job!</h2>${mile}<p>+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT BOARD</button>`;
+            let story = milestones[currentLevel] || fillerStories[Math.floor(Math.random() * fillerStories.length)];
+            content.innerHTML = `${chefMayaTag}<h2>Excellent!</h2><p>${story}</p><p style="color:var(--success)">+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT ORDER</button>`;
+        } else if (mode === "fail") {
+            content.innerHTML = `${chefMayaTag}<h2>Oh No!</h2><p>That customer was in a hurry. Let's try to be a bit faster on the next one!</p><button class="big-btn" onclick="showStory('level')">CONTINUE</button>`;
         } else {
             overlay.style.display = 'none'; startLevel();
         }
@@ -231,7 +244,12 @@
         timerInterval = setInterval(() => {
             timeLeft--; txt.innerText = (timeLeft / 100).toFixed(2) + "s";
             txt.style.color = timeLeft < 500 ? 'var(--danger)' : '#333';
-            if (timeLeft <= 0) { clearInterval(timerInterval); playSound('buzzer'); lives--; document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives); showStory('fail'); }
+            if (timeLeft <= 0) { 
+                clearInterval(timerInterval); playSound('buzzer'); 
+                lives--; 
+                document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives); 
+                showStory('fail'); 
+            }
         }, 10);
     }
 
