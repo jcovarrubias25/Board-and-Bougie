@@ -3,47 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: 85 Levels</title>
+    <title>The Rustic Board: 100 Levels</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap');
         
-        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ecc71; --paper: #fffcf2; --accent: #ff9f43; }
+        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ecc71; --paper: #fffcf2; }
         
-        body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
+        body { 
+            font-family: 'Fredoka One', cursive; 
+            background: #fdfaf5; margin: 0; padding: 0; 
+            overflow: hidden; height: 100vh; 
+            display: flex; justify-content: center; align-items: flex-start; 
+        }
         
-        #game-container { width: 100%; height: 94vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        /* Smaller container height to keep URL bar visible */
+        #game-container { 
+            width: 100%; height: 88vh; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: space-between; 
+            padding: 10px; box-sizing: border-box; 
+        }
         
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 30px; border-radius: 30px; border: 6px solid var(--primary); width: 100%; max-width: 380px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .story-box { background: var(--paper); padding: 30px; border-radius: 30px; border: 6px solid var(--primary); width: 100%; max-width: 380px; text-align: center; }
         
-        .chef-avatar { font-size: 100px; margin-bottom: 10px; display: block; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
-        .chef-tag { color: var(--primary); font-size: 18px; text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 2px; }
+        .chef-avatar { font-size: 90px; margin-bottom: 10px; display: block; }
+        .chef-tag { color: var(--primary); font-size: 18px; text-transform: uppercase; margin-bottom: 10px; display: block; }
 
-        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
-        #lives-display { font-size: 26px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
+        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         
-        .order-card { background: white; padding: 15px; border-radius: 22px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 4px solid var(--primary); width: 100%; box-sizing: border-box; }
-        #order-title { font-size: 22px; color: #333; display: block; margin-bottom: 5px; }
-        #order-details { font-family: 'Quicksand', sans-serif; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; }
-        .req-chip { background: #f0edff; padding: 5px 10px; border-radius: 12px; color: var(--primary); border: 2px solid #dcd3ff; }
+        /* Larger Font on Order Cards */
+        .order-card { background: white; padding: 18px; border-radius: 22px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 5px solid var(--primary); width: 100%; box-sizing: border-box; }
+        #order-title { font-size: 26px; color: #333; display: block; margin-bottom: 8px; }
+        #order-details { font-family: 'Quicksand', sans-serif; font-size: 20px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 8px; }
+        .req-chip { background: #f0edff; padding: 6px 12px; border-radius: 12px; color: var(--primary); border: 2px solid #dcd3ff; }
 
-        .play-area { display: flex; align-items: center; gap: 20px; width: 100%; justify-content: center; }
-        .board { width: 250px; min-height: 160px; background: var(--wood); border: 10px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 6px; padding: 15px; box-shadow: inset 0 0 30px rgba(0,0,0,0.4); }
+        .play-area { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center; }
+        .board { width: 230px; min-height: 150px; background: var(--wood); border: 10px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 6px; padding: 12px; box-shadow: inset 0 0 30px rgba(0,0,0,0.4); }
 
-        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 75px; }
-        #egg-timer { font-size: 55px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.2)); }
-        #timer-text { font-size: 18px; margin-top: 8px; color: #333; }
+        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 80px; }
+        #egg-timer { font-size: 50px; }
+        #timer-text { font-size: 20px; margin-top: 5px; color: #333; font-weight: 900; }
 
-        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 8px 0 #ddd; box-sizing: border-box; border: 2px solid #eee; }
-        .item { font-size: 48px; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .item:active { transform: scale(1.3); }
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; background: white; padding: 12px; border-radius: 25px; box-shadow: 0 8px 0 #ddd; box-sizing: border-box; border: 2px solid #eee; }
+        .item { font-size: 44px; cursor: pointer; user-select: none; }
         
-        button#serve-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 50px; font-size: 26px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; transition: 0.1s; }
-        button#serve-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #5a3ec7; }
+        button#serve-btn { background: var(--primary); color: white; border: none; padding: 20px; border-radius: 50px; font-size: 28px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; }
         
-        .money-text { color: var(--success); font-size: 26px; text-shadow: 1px 1px 0px #fff; }
-        h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
-        p { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; color: #444; }
+        .money-text { color: var(--success); font-size: 28px; }
+        h2 { font-size: 34px; color: var(--primary); }
+        p { font-family: 'Quicksand', sans-serif; font-size: 20px; font-weight: 700; color: #444; }
     </style>
 </head>
 <body>
@@ -52,13 +61,13 @@
 
 <div id="game-container">
     <div class="header">
-        <div style="font-size: 1.6rem; color: var(--primary);">RUSTIC BOARD</div>
+        <div style="font-size: 1.4rem; color: var(--primary);">RUSTIC BOARD</div>
         <div id="lives-display">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b id="order-title">Order <span id="level-num">1</span>/85</b>
+            <b id="order-title">Level <span id="level-num">1</span>/100</b>
             <span class="money-text">$<span id="score-display">0.00</span></span>
         </div>
         <div id="order-details"></div>
@@ -88,28 +97,23 @@
         {e:'🥖', t:'cracker', v:1.5}, {e:'🥐', t:'cracker', v:2.0}, {e:'🍞', t:'cracker', v:1.0}, {e:'🍇', t:'fruit', v:2.0}, {e:'🍓', t:'fruit', v:2.5}, {e:'🫐', t:'fruit', v:3.0},
         {e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🍬', t:'sweet', v:0.5},
         {e:'🥜', t:'nut', v:2.0}, {e:'🌰', t:'nut', v:2.0}, {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🍃', t:'garnish', v:1.0},
-        {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🍯', t:'sweet', v:3.5}, {e:'🦐', t:'meat', v:5.0}
+        {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🦐', t:'meat', v:5.0}, {e:'🧁', t:'sweet', v:4.0}
     ];
 
-    // Build 85 Levels procedurally with increasing complexity
-    const clients = ["Neighbor", "Student", "Coach", "Nurse", "Pilot", "Artist", "Mayor", "Critic", "VIP", "Influencer", "Grandma", "Chef", "Farmer", "Gamer", "CEO", "Queen", "Legend"];
     const levels = [];
-    for(let i=1; i<=85; i++) {
-        let diff = Math.floor(i / 10) + 1;
-        let cName = clients[i % clients.length];
+    for(let i=1; i<=100; i++) {
+        let difficulty = Math.floor(i / 10) + 1;
         let r = {};
         let types = ['cheese', 'meat', 'cracker', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
-        let numTypes = Math.min(diff + 1, 5);
+        let numTypes = Math.min(difficulty + 1, 6);
         for(let j=0; j<numTypes; j++) {
             let t = types[j % types.length];
-            r[t] = Math.floor(Math.random() * diff) + 1;
+            r[t] = Math.floor(Math.random() * (difficulty)) + 1;
         }
         levels.push({
-            c: cName,
-            n: `Level ${i}: Can you handle this board?`,
-            t: Math.max(25 - diff, 10),
+            t: Math.max(25 - difficulty, 12),
             r: r,
-            p: 10 + (i * 5)
+            p: 10 + (i * 4)
         });
     }
 
@@ -119,16 +123,15 @@
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `${chefMaya}<h2>85 Order Challenge!</h2><p>Maya's Boutique is booming! Let's serve 85 clients and make a fortune!</p><button onclick="showStory('level')">Open Shop!</button>`;
+            content.innerHTML = `${chefMaya}<h2>100 Levels!</h2><p>Our biggest challenge yet. Let's make Chef Maya a world legend!</p><button onclick="showStory('level')">Open Shop!</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `${chefMaya}<h2>Kitchen Heat!</h2><p>We need a break. Let's start the shift over.</p><button onclick="resetGame()">Try Again</button>`;
+            content.innerHTML = `${chefMaya}<h2>Kitchen Closed</h2><p>Tough shift! Let's restart and try again.</p><button onclick="resetGame()">Try Again</button>`;
         } else if (mode === "success") {
-            content.innerHTML = `${chefMaya}<h2>Cha-Ching!</h2><p>Earned: <span class="money-text">$${earnings.toFixed(2)}</span></p><button onclick="showStory('level')">Next Order ➡️</button>`;
+            content.innerHTML = `${chefMaya}<h2>Order Complete!</h2><p>You earned <span class="money-text">$${earnings.toFixed(2)}</span></p><button onclick="showStory('level')">Next Order ➡️</button>`;
         } else if (currentLevel < levels.length) {
-            const data = levels[currentLevel];
-            content.innerHTML = `${chefMaya}<h3>Order ${currentLevel+1}: ${data.c}</h3><p>"I need a fresh board immediately!"</p><button onclick="startLevel()">Start Prep</button>`;
+            content.innerHTML = `${chefMaya}<h3>Level ${currentLevel+1}</h3><p>"The customers are lined up around the block!"</p><button onclick="startLevel()">Prep Board</button>`;
         } else {
-            content.innerHTML = `${chefMaya}<h2>Empire Built!</h2><p>Final Earnings: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>Ultimate Icon!</h2><p>100/100 completed! Total: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">Start New Career</button>`;
         }
     }
 
@@ -164,17 +167,17 @@
 
     function startTimer() {
         clearInterval(timerInterval);
-        const timerText = document.getElementById('timer-text');
-        const eggIcon = document.getElementById('egg-timer');
+        const txt = document.getElementById('timer-text');
+        const egg = document.getElementById('egg-timer');
         timerInterval = setInterval(() => {
             timeLeft--;
-            timerText.innerText = (timeLeft / 100).toFixed(2) + "s";
+            txt.innerText = (timeLeft / 100).toFixed(2) + "s";
             if (timeLeft < 400) {
-                eggIcon.style.transform = `rotate(${Math.sin(timeLeft) * 20}deg)`;
-                timerText.style.color = 'var(--danger)';
+                egg.style.transform = `rotate(${Math.sin(timeLeft) * 20}deg)`;
+                txt.style.color = 'var(--danger)';
             } else {
-                eggIcon.style.transform = 'rotate(0deg)';
-                timerText.style.color = '#333';
+                egg.style.transform = 'rotate(0deg)';
+                txt.style.color = '#333';
             }
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -190,8 +193,7 @@
         const items = document.querySelectorAll('#board .item');
         let counts = {}, boardValue = 0;
         items.forEach(i => {
-            let t = i.dataset.type;
-            counts[t] = (counts[t] || 0) + 1;
+            counts[i.dataset.type] = (counts[i.dataset.type] || 0) + 1;
             boardValue += parseFloat(i.dataset.val || 0);
         });
         let win = true;
