@@ -5,63 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>The Rustic Board</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap');
-        
         :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; --paper: #fffcf2; }
         
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            background: #fdfaf5; margin: 0; padding: 0; 
-            overflow: hidden; height: 100vh; 
-            display: flex; flex-direction: column; align-items: center; 
-        }
-
-        h1, h2, h3, b, button { font-family: 'Fredoka One', cursive; }
-
-        #game-container { 
-            width: 100%; height: 90vh; 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: space-between; 
-            padding: 15px; box-sizing: border-box; 
-        }
-
-        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 25px; border-radius: 25px; border: 4px solid var(--primary); width: 100%; max-width: 340px; text-align: center; }
-
-        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
         
-        .order-card { background: white; padding: 12px; border-radius: 18px; border: 3px solid var(--primary); width: 100%; box-sizing: border-box; }
-        #order-details { font-size: 14px; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
-        .req-chip { background: #f0edff; padding: 4px 8px; border-radius: 10px; color: var(--primary); border: 1px solid #dcd3ff; font-weight: 700; }
+        #game-container { width: 100%; height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        
+        /* Story Overlay */
+        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .story-box { background: var(--paper); padding: 20px; border-radius: 20px; border-top: 10px solid var(--primary); width: 100%; max-width: 360px; text-align: center; position: relative; }
+        
+        /* Chef Maya Character */
+        .chef-avatar { font-size: 80px; margin-bottom: 10px; display: block; }
+        .chef-tag { font-weight: 900; color: var(--primary); font-size: 14px; text-transform: uppercase; margin-bottom: 10px; display: block; }
 
-        #timer-bar { width: 100%; height: 20px; background: #eee; border-radius: 10px; overflow: hidden; border: 3px solid #333; margin: 10px 0; position: relative; }
+        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        
+        .order-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; }
+        #order-details { font-size: 12px; color: #111; font-weight: 800; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .req-chip { background: #f0f0f0; padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; }
+        
+        /* Timer Bar */
+        #timer-bar { width: 100%; height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 2px solid #000; margin: 10px 0; }
         #timer-fill { width: 100%; height: 100%; background: var(--success); }
 
-        .board { 
-            width: 280px; min-height: 140px; 
-            background: var(--wood); border: 10px solid var(--bark); 
-            border-radius: 50px; display: flex; flex-wrap: wrap; 
-            justify-content: center; align-content: center; 
-            gap: 5px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); 
-        }
-
-        .tray { 
-            display: grid; grid-template-columns: repeat(6, 1fr); 
-            gap: 8px; width: 100%; background: white; 
-            padding: 15px; border-radius: 20px; 
-            box-shadow: 0 4px 0 #ddd; box-sizing: border-box; 
-        }
-
-        .item { font-size: 44px; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .item:active { transform: scale(1.2); }
-
-        button#serve-btn { 
-            background: var(--primary); color: white; border: none; 
-            padding: 20px; border-radius: 40px; font-size: 24px; 
-            box-shadow: 0 6px 0 #5a3ec7; width: 100%; margin-top: 10px;
-        }
-
-        .leaderboard { text-align: left; max-height: 120px; overflow-y: auto; font-size: 14px; margin: 15px 0; background: #fff; padding: 10px; border-radius: 15px; border: 2px dashed #ccc; }
+        .board { width: 280px; min-height: 140px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; width: 100%; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 20px; }
+        
+        .item { font-size: 42px; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .item:active { transform: scale(0.8); }
+        
+        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-weight: 900; font-size: 20px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
+        .leaderboard { text-align: left; max-height: 100px; overflow-y: auto; font-size: 12px; background: #eee; padding: 10px; border-radius: 10px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -72,14 +47,14 @@
 
 <div id="game-container">
     <div class="header">
-        <div style="font-size: 1.4rem; color: var(--primary);">RUSTIC BOARD</div>
-        <div id="lives-display" style="font-size: 20px;">❤️❤️❤️</div>
+        <div style="font-weight: 900; font-size: 1.2rem;">THE RUSTIC BOARD</div>
+        <div id="lives-display">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b id="order-title" style="font-size: 18px;">New Order</b> 
-            <span style="color:var(--primary); font-size: 16px;"><span id="score-display">0</span> points</span>
+        <div style="display: flex; justify-content: space-between;">
+            <b id="order-title">Level Loading...</b>
+            <span style="font-weight: 900;"><span id="score-display">0</span> points</span>
         </div>
         <div id="order-details"></div>
     </div>
@@ -87,10 +62,9 @@
     <div id="timer-bar"><div id="timer-fill"></div></div>
 
     <div class="board" id="board"></div>
-
     <div class="tray" id="tray"></div>
 
-    <button id="serve-btn" onclick="submitBoard()">SERVE CLIENT ✨</button>
+    <button onclick="submitBoard()">SERVE CLIENT ✨</button>
 </div>
 
 <script>
@@ -98,6 +72,7 @@
     let score = 0;
     let lives = 3;
     let timerInterval, timeLeft, maxTime;
+    let gameStarted = false;
 
     const pantry = [
         {e:'🧀', t:'cheese', q:2}, {e:'🥩', t:'meat', q:3}, {e:'🥓', t:'meat', q:2}, {e:'🍗', t:'meat', q:3}, {e:'🍕', t:'meat', q:1}, {e:'🥚', t:'egg', q:3},
@@ -108,47 +83,46 @@
     ];
 
     const levels = [
-        { title: "Grand Opening", customer: "The Neighbor", note: "Welcome! Just a simple snack to start: one cheese and one cracker.", time: 7, req: { cheese: 1, cracker: 1 } },
-        { title: "Protein Pop", customer: "Coach Mike", note: "The team is hungry! I need energy! One meat and one egg.", time: 8, req: { meat: 1, egg: 1 } },
-        { title: "The Office Lunch", customer: "Pam the Boss", note: "We have a big meeting. Get me 2 meats and 1 fruit!", time: 10, req: { meat: 2, fruit: 1 } },
-        { title: "Sweet Surprise", customer: "A Local Kid", note: "Mom said I could have a treat! 2 sweets and 2 fruits!", time: 12, req: { sweet: 2, fruit: 2 } },
-        { title: "The Critic's Visit", customer: "The Food Critic", note: "Impress me. 2 olives, 2 cheeses, and 1 garnish.", time: 15, req: { olive: 2, cheese: 2, garnish: 1 } }
+        { title: "Grand Opening", customer: "Mrs. Higgins", note: "Welcome to the neighborhood, Chef Maya! I'd like a simple cheese and cracker board.", time: 7, req: { cheese: 1, cracker: 1 } },
+        { title: "The Office Perk", customer: "Steve", note: "Chef, the team is working late. We need 2 meats and 1 fruit for energy!", time: 9, req: { meat: 2, fruit: 1 } },
+        { title: "Gym Snack", customer: "Coach Brad", note: "Maya! I need a protein punch. Get me an egg and some meat!", time: 7, req: { meat: 1, egg: 1 } },
+        { title: "The Critic's Visit", customer: "Mr. Sterling", note: "I have high standards. I require 2 olives, 2 cheeses, and 1 garnish.", time: 15, req: { olive: 2, cheese: 2, garnish: 1 } }
     ];
 
-    function showStory(state = "intro", perfect = false) {
+    const chefMaya = '<span class="chef-avatar">👩🏾‍🍳</span><span class="chef-tag">Chef Maya</span>';
+
+    function showStory(mode = "prologue", perfect = false) {
         const overlay = document.getElementById('story-overlay');
         const content = document.getElementById('story-content');
-        
-        if (lives <= 0) {
+        overlay.style.display = 'flex';
+
+        if (mode === "prologue") {
+            content.innerHTML = `${chefMaya}<h2>Welcome to 'The Rustic Board'!</h2><p>I've finally opened my own business. I need to serve my clients fast and accurately to build my reputation. Ready to help me prep?</p><button onclick="showStory('level')">Let's Get Started!</button>`;
+        } else if (lives <= 0) {
             saveScore();
-            content.innerHTML = `<h2>Oh No!</h2><p>You ran out of lives!</p>${getLeaderboardHTML()}<button onclick="resetGame()">Try Again</button>`;
-        } else if (state === "success") {
-            content.innerHTML = `<h2>${perfect ? '✨ PERFECT! ✨' : 'Level Complete!'}</h2><p>Total Score: ${score} points</p><button onclick="showStory('intro')">Next Client ➡️</button>`;
+            content.innerHTML = `${chefMaya}<h2>Oh no!</h2><p>We lost too many clients. Let's take a break and try again later.</p>${getLeaderboardHTML()}<button onclick="resetGame()">Try Again</button>`;
+        } else if (mode === "success") {
+            content.innerHTML = `${chefMaya}<h2>${perfect ? '✨ Perfect Selection! ✨' : 'Great Job!'}</h2><p>The client loved it! We earned ${score} points so far.</p><button onclick="showStory('level')">Next Client ➡️</button>`;
         } else if (currentLevel < levels.length) {
             const data = levels[currentLevel];
-            content.innerHTML = `<h3>Client: ${data.customer}</h3><p>"${data.note}"</p><button onclick="startLevel()">Accept Order</button>`;
+            content.innerHTML = `${chefMaya}<h3>Message from ${data.customer}</h3><p>"${data.note}"</p><button onclick="startLevel()">Accept Order</button>`;
         } else {
             saveScore();
-            content.innerHTML = `<h2>Legendary Chef!</h2><p>Final Score: ${score} points</p>${getLeaderboardHTML()}<button onclick="resetGame()">Restart Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>We Made It!</h2><p>Our business is a success! Final Score: ${score} points.</p>${getLeaderboardHTML()}<button onclick="resetGame()">Start New Career</button>`;
         }
-        overlay.style.display = 'flex';
     }
 
     function renderTray() {
-        const tray = document.getElementById('tray');
-        tray.innerHTML = '';
+        const tray = document.getElementById('tray'); tray.innerHTML = '';
         pantry.forEach(item => {
             const d = document.createElement('div');
             d.className = 'item'; d.innerHTML = item.e;
             d.onclick = () => {
-                const onBoard = document.createElement('div');
-                onBoard.className = 'item';
-                onBoard.innerHTML = item.e;
-                onBoard.dataset.type = item.t;
-                onBoard.dataset.quality = item.q;
-                // Move back to pantry if tapped on board
-                onBoard.onclick = () => { onBoard.remove(); if(navigator.vibrate) navigator.vibrate(5); };
-                document.getElementById('board').appendChild(onBoard);
+                const bItem = d.cloneNode(true);
+                bItem.dataset.type = item.t;
+                bItem.dataset.quality = item.q;
+                bItem.onclick = () => bItem.remove(); // Tap on board to return
+                document.getElementById('board').appendChild(bItem);
                 if(navigator.vibrate) navigator.vibrate(10);
             };
             tray.appendChild(d);
@@ -158,16 +132,13 @@
     function startLevel() {
         document.getElementById('story-overlay').style.display = 'none';
         const data = levels[currentLevel];
-        maxTime = data.time * 100;
-        timeLeft = maxTime;
+        maxTime = data.time * 100; timeLeft = maxTime;
         document.getElementById('order-title').innerText = data.title;
         document.getElementById('board').innerHTML = '';
         renderTray();
-        
         let details = "";
         for (let k in data.req) details += `<span class="req-chip">${data.req[k]}x ${k.toUpperCase()}</span>`;
         document.getElementById('order-details').innerHTML = details;
-        
         startTimer();
     }
 
@@ -180,12 +151,11 @@
             fill.style.width = pct + '%';
             if (pct < 30) fill.style.background = 'var(--danger)';
             else fill.style.background = 'var(--success)';
-            
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 lives--;
                 document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
-                showStory('intro');
+                showStory('level');
             }
         }, 10);
     }
@@ -194,28 +164,22 @@
         const data = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
         let counts = {}, totalQuality = 0, itemCount = 0;
-        
         items.forEach(i => {
             let t = i.dataset.type;
             counts[t] = (counts[t] || 0) + 1;
-            totalQuality += parseInt(i.dataset.quality);
+            totalQuality += parseInt(i.dataset.quality || 0);
             itemCount++;
         });
-
         let win = true;
         for (let k in data.req) { if ((counts[k] || 0) < data.req[k]) win = false; }
-
         if (win) {
             clearInterval(timerInterval);
-            let timeBonus = Math.floor((timeLeft / maxTime) * 100);
             let perfectReq = Object.values(data.req).reduce((a, b) => a + b, 0);
             let isPerfect = (itemCount === perfectReq);
-            score += (timeBonus + (isPerfect ? 50 : 0) + (totalQuality * 5));
+            score += (Math.floor((timeLeft/maxTime)*100) + (isPerfect ? 50 : 0) + (totalQuality * 5));
             document.getElementById('score-display').innerText = score;
             currentLevel++;
             showStory("success", isPerfect);
-        } else {
-            if(navigator.vibrate) navigator.vibrate([40, 40]);
         }
     }
 
@@ -228,17 +192,13 @@
 
     function getLeaderboardHTML() {
         let ts = JSON.parse(localStorage.getItem('rusticScores') || "[]");
-        return `<div class="leaderboard"><b>TOP 10 SCORES:</b><br>${ts.map((s, i) => `${i+1}. ${s.score} points`).join('<br>') || 'No scores yet'}</div>`;
+        return `<div class="leaderboard"><b>TOP SCORES:</b><br>${ts.map(s => `${s.score} pts`).join('<br>') || 'None'}</div>`;
     }
 
-    function resetGame() {
-        currentLevel = 0; score = 0; lives = 3;
-        document.getElementById('score-display').innerText = "0";
-        document.getElementById('lives-display').innerText = "❤️".repeat(3);
-        showStory('intro');
-    }
+    function resetGame() { currentLevel = 0; score = 0; lives = 3; document.getElementById('score-display').innerText = "0"; document.getElementById('lives-display').innerText = "❤️".repeat(3); showStory('prologue'); }
 
-    showStory('intro');
+    // Kickoff
+    showStory('prologue');
 </script>
 </body>
 </html>
