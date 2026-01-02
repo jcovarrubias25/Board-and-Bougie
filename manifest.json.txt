@@ -1,0 +1,13 @@
+{
+  "short_name": "Charcuterie",
+  "name": "Charcuterie Challenge Game",
+  "icons": [
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
+  "start_url": "charcuterie-game.html",
+  "background_color": "#f8f6f2",
+  "display": "standalone",
+  "theme_color": "#7a5cfa",
+  "orientation": "portrait"
+}

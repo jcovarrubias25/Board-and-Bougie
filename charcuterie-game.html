@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Charcuterie Challenge</title>
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f8f6f2;
+    margin: 0;
+    padding: 16px;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 4px;
+  }
+
+  .order {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .timer {
+    font-weight: bold;
+    margin: 8px 0;
+    font-size: 18px;
+  }
+
+  .board {
+    min-height: 180px;
+    background: #e8d8c3;
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    cursor: grab;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    user-select: none;
+  }
+
+  button {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: none;
+    background: #7a5cfa;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .message {
+    margin-top: 12px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🧀 Charcuterie Challenge</h1>
+
+<div class="order">
+  <strong>Order:</strong> Girls’ Night In  
+  <br>✔ 2 Cheeses  
+  <br>✔ 1 Fruit  
+  <br>✔ 1 Sweet  
+</div>
+
+<div class="timer">⏱ Time: <span id="time">60</span>s</div>
+
+<div class="board" id="board" ondragover="event.preventDefault()" ondrop="drop(event)">
+  <em>Drag items here</em>
+</div>
+
+<h3>Ingredient Tray</h3>
+<div class="tray">
+  <div class="item" draggable="true" data-type="cheese">🧀 Brie</div>
+  <div class="item" draggable="true" data-type="cheese">🧀 Cheddar</div>
+  <div class="item" draggable="true" data-type="fruit">🍓 Strawberries</div>
+  <div class="item" draggable="true" data-type="fruit">🍇 Grapes</div>
+  <div class="item" draggable="true" data-type="sweet">🍫 Chocolate</div>
+  <div class="item" draggable="true" data-type="sweet">🍪 Cookies</div>
+</div>
+
+<button onclick="submitBoard()">Submit Board</button>
+
+<div class="message" id="message"></div>
+
+<script>
+  let timeLeft = 60;
+  let timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      endGame(false, "Time’s up!");
+    }
+  }, 1000);
+
+  document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("text/plain", item.outerHTML);
+      item.remove();
+    });
+  });
+
+  function drop(e) {
+    const data = e.dataTransfer.getData("text/plain");
+    e.target.closest(".board").insertAdjacentHTML("beforeend", data);
+  }
+
+  function submitBoard() {
+    const items = document.querySelectorAll("#board .item");
+    let counts = { cheese: 0, fruit: 0, sweet: 0 };
+
+    items.forEach(item => {
+      counts[item.dataset.type]++;
+    });
+
+    if (counts.cheese >= 2 && counts.fruit >= 1 && counts.sweet >= 1) {
+      endGame(true, "🎉 Order Complete! Beautiful board!");
+    } else {
+      endGame(false, "❌ Order incorrect. Try again!");
+    }
+  }
+
+  function endGame(win, text) {
+    clearInterval(timer);
+    document.getElementById("message").textContent = text;
+  }
+</script>
+
+</body>
+</html>

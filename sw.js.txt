@@ -1,0 +1,21 @@
+const cacheName = 'charcuterie-v1';
+const assets = [
+  './charcuterie-game.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
+];
+
+// This part saves the game files to the phone's memory
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(cacheName).then(cache => cache.addAll(assets))
+  );
+});
+
+// This part lets the game load from the memory instead of the web
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
+  );
+});
