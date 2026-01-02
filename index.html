@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Charcuterie Rush: Hardcore</title>
+    <title>Charcuterie Rush: Legendary</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; }
         body { font-family: system-ui, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        #game-container { width: 100%; height: 96vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; }
+        #game-container { width: 100%; height: 98vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; }
         .header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
-        .lvl-badge { background: #333; color: white; padding: 4px 12px; border-radius: 20px; font-weight: 900; font-size: 12px; }
-        .order-card { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 94%; }
-        #order-details { font-size: 13px; color: #222; font-weight: 800; margin-top: 4px; line-height: 1.1; }
-        .board { width: 250px; min-height: 140px; background: var(--wood); border: 8px solid var(--bark); border-radius: 35px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 2px; padding: 8px; box-shadow: inset 0 0 15px rgba(0,0,0,0.2); margin: 5px 0; }
-        .tray { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 8px; background: rgba(255,255,255,0.4); border-radius: 15px; width: 100%; overflow-y: auto; max-height: 35vh; }
-        .item { font-size: 58px; cursor: pointer; user-select: none; transition: transform 0.05s; }
-        .item:active { transform: scale(1.2); }
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 40px; font-weight: 900; font-size: 22px; box-shadow: 0 5px 0 #5a3ec7; width: 90%; flex-shrink: 0; margin-bottom: 5px; }
-        button:active { transform: translateY(3px); box-shadow: 0 2px 0 #5a3ec7; }
-        #timer-bar { width: 94%; height: 14px; background: #ddd; border-radius: 7px; overflow: hidden; margin: 5px 0; border: 2px solid #333; }
+        .lvl-badge { background: #000; color: #fff; padding: 4px 10px; border-radius: 12px; font-weight: 900; font-size: 11px; }
+        .order-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 95%; position: relative; }
+        #order-details { font-size: 12px; color: #111; font-weight: 800; margin-top: 4px; line-height: 1.1; display: flex; flex-wrap: wrap; gap: 4px; }
+        .req-chip { background: #f0f0f0; padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; }
+        .board { width: 260px; min-height: 150px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 1px; padding: 5px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+        .tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px; background: rgba(255,255,255,0.3); border-radius: 20px; width: 100%; overflow-y: auto; max-height: 38vh; }
+        .item { font-size: 60px; cursor: pointer; user-select: none; transition: transform 0.05s; }
+        .item:active { transform: scale(0.8); }
+        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-weight: 900; font-size: 24px; box-shadow: 0 6px 0 #5a3ec7; width: 92%; flex-shrink: 0; margin-bottom: 5px; }
+        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #5a3ec7; }
+        #timer-bar { width: 95%; height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 2px solid #000; margin: 4px 0; }
         #timer-fill { width: 100%; height: 100%; background: var(--success); }
-        #msg { font-weight: 900; color: var(--danger); height: 20px; font-size: 14px; text-transform: uppercase; }
+        #msg { font-weight: 900; height: 20px; font-size: 16px; }
     </style>
 </head>
 <body>
 <div id="game-container">
     <div class="header">
-        <div style="font-weight: 900; font-size: 1.5rem; color: var(--primary);">ULTRA RUSH</div>
+        <div style="font-weight: 900; font-size: 1.6rem; letter-spacing: -1px;">LEGEND <span style="color:var(--primary)">RUSH</span></div>
         <div class="lvl-badge" id="lvl-display">LVL 1</div>
     </div>
     <div class="order-card">
-        <b id="order-title" style="font-size: 16px;">Loading...</b>
+        <b id="order-title" style="font-size: 14px; text-transform: uppercase;">Loading...</b>
         <div id="order-details"></div>
     </div>
     <div id="timer-bar"><div id="timer-fill"></div></div>
@@ -47,44 +48,59 @@
     let timerInterval;
     let timeLeft;
 
-    // GLOBAL PANTRY: 28 items total for complex variety
+    // MASSIVE PANTRY: 36 Items
     const pantry = [
         {e:'🧀', t:'cheese'}, {e:'🧀', t:'cheese'}, {e:'🧀', t:'cheese'}, {e:'🧀', t:'cheese'},
-        {e:'🥩', t:'meat'}, {e:'🍕', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🥓', t:'meat'},
-        {e:'🥨', t:'cracker'}, {e:'🥖', t:'cracker'}, {e:'🍞', t:'cracker'}, {e:'🥨', t:'cracker'},
-        {e:'🍇', t:'fruit'}, {e:'🍓', t:'fruit'}, {e:'🫐', t:'fruit'}, {e:'🍓', t:'fruit'},
-        {e:'🍫', t:'sweet'}, {e:'🍪', t:'sweet'}, {e:'🍫', t:'sweet'}, {e:'🍩', t:'sweet'},
-        {e:'🥜', t:'nut'}, {e:'🥜', t:'nut'}, {e:'🌰', t:'nut'},
-        {e:'🫒', t:'olive'}, {e:'🫒', t:'olive'}, {e:'🫒', t:'olive'},
-        {e:'🌿', t:'garnish'}, {e:'🥕', t:'veg'}
+        {e:'🥩', t:'meat'}, {e:'🍕', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🍗', t:'meat'},
+        {e:'🥨', t:'cracker'}, {e:'🥖', t:'cracker'}, {e:'🍞', t:'cracker'}, {e:'🥐', t:'cracker'},
+        {e:'🍇', t:'fruit'}, {e:'🍓', t:'fruit'}, {e:'🫐', t:'fruit'}, {e:'🍒', t:'fruit'}, {e:'🍍', t:'fruit'},
+        {e:'🍫', t:'sweet'}, {e:'🍪', t:'sweet'}, {e:'🍩', t:'sweet'}, {e:'🍰', t:'sweet'}, {e:'🍬', t:'sweet'},
+        {e:'🥜', t:'nut'}, {e:'🌰', t:'nut'}, {e:'🥜', t:'nut'},
+        {e:'🫒', t:'olive'}, {e:'🫒', t:'olive'}, {e:'🥒', t:'olive'},
+        {e:'🌿', t:'garnish'}, {e:'🍃', t:'garnish'}, {e:'🥕', t:'veg'}, {e:'🍅', t:'veg'}, {e:'🌽', t:'veg'}, {e:'🌶️', t:'veg'}, {e:'🥚', t:'egg'}
     ];
 
     const levels = [
-        {title:"Express Snack", time:5, req:{cheese:1, cracker:1}},
-        {title:"Quick Meat", time:6, req:{meat:1, cracker:1}},
-        {title:"Fruit Dash", time:6, req:{fruit:2}},
-        {title:"Nutty Bite", time:7, req:{nut:2, cheese:1}},
-        {title:"The Duo", time:8, req:{meat:1, cheese:1, cracker:1}},
-        {title:"Olive Quickie", time:8, req:{olive:2, cracker:1}},
-        {title:"Sweet Grab", time:9, req:{sweet:2, fruit:1}},
-        {title:"The Basic", time:10, req:{meat:1, cheese:1, cracker:1, fruit:1}},
-        {title:"Salty Trio", time:10, req:{meat:1, olive:1, cracker:1}},
-        {title:"Veggie Rush", time:11, req:{veg:1, cheese:1, garnish:1}},
-        {title:"Double Cheese", time:12, req:{cheese:2, cracker:2}},
-        {title:"Sugar High", time:12, req:{sweet:2, fruit:2}},
-        {title:"Forest Board", time:14, req:{nut:2, berry:1, cheese:1, garnish:1}},
-        {title:"Deli Tray", time:15, req:{meat:2, cheese:1, cracker:2}},
-        {title:"Antipasto", time:16, req:{meat:1, olive:2, cheese:1, cracker:1}},
-        {title:"Fruit Basket", time:18, req:{fruit:3, sweet:1, nut:1}},
-        {title:"The Picnic", time:20, req:{meat:2, cheese:2, fruit:1, cracker:1}},
-        {title:"Wine Pairing", time:22, req:{cheese:3, fruit:2, cracker:1}},
-        {title:"Meat Locker", time:24, req:{meat:3, cracker:2, nut:1}},
-        {title:"Platter Prime", time:26, req:{meat:2, cheese:2, cracker:2, fruit:1, olive:1}},
-        {title:"Garden Party", time:28, req:{veg:1, garnish:2, fruit:2, cheese:2}},
-        {title:"Full Spread", time:30, req:{meat:2, cheese:2, cracker:2, sweet:2, nut:1}},
-        {title:"The Caterer", time:33, req:{meat:3, cheese:3, cracker:2, olive:2}},
-        {title:"Chef's Choice", time:35, req:{meat:2, cheese:2, fruit:2, cracker:2, sweet:1, garnish:1}},
-        {title:"IMPOSSIBLE RUSH", time:38, req:{meat:3, cheese:3, cracker:3, fruit:2, nut:1, olive:1, sweet:1, garnish:1}}
+        {title:"Express Lunch", time:4, req:{cheese:1, cracker:1}},
+        {title:"Meat Grab", time:5, req:{meat:1, cracker:1}},
+        {title:"Fruit Snap", time:5, req:{fruit:2}},
+        {title:"Quick Olive", time:6, req:{olive:1, cracker:1}},
+        {title:"The Duo", time:7, req:{meat:1, cheese:1, cracker:1}},
+        {title:"Nutty Dash", time:7, req:{nut:2}},
+        {title:"Veggie Pop", time:8, req:{veg:1, garnish:1}},
+        {title:"Sweet Tooth", time:8, req:{sweet:2}},
+        {title:"Prosciutto Run", time:9, req:{meat:2, cracker:1}},
+        {title:"Garden Box", time:9, req:{veg:1, fruit:1, cheese:1}},
+        {title:"The Slider", time:10, req:{meat:1, cheese:1, veg:1, cracker:1}},
+        {title:"Berry Blast", time:10, req:{fruit:3}},
+        {title:"Salty Snack", time:11, req:{olive:2, nut:1}},
+        {title:"Deli Classic", time:11, req:{meat:2, cheese:2}},
+        {title:"Picnic Set", time:12, req:{fruit:1, meat:1, cheese:1, cracker:1}},
+        {title:"Holiday Plate", time:12, req:{meat:1, sweet:1, nut:1, garnish:1}},
+        {title:"Brunch Board", time:13, req:{egg:1, meat:1, fruit:1, cracker:1}},
+        {title:"Pizza Prep", time:13, req:{meat:2, cheese:1, veg:1}},
+        {title:"Candy Shop", time:14, req:{sweet:3, fruit:1}},
+        {title:"Antipasto", time:15, req:{meat:2, olive:2, garnish:1}},
+        {title:"The Greek", time:16, req:{olive:2, veg:2, cheese:1}},
+        {title:"Farm Fresh", time:17, req:{veg:2, egg:1, garnish:1}},
+        {title:"Baker's Mix", time:18, req:{cracker:3, sweet:1}},
+        {title:"Harvest Platter", time:20, req:{fruit:2, veg:2, nut:1, cheese:1}},
+        {title:"Steakhouse", time:22, req:{meat:3, garnish:1, veg:1}},
+        {title:"The Vineyard", time:24, req:{cheese:3, fruit:2, cracker:2}},
+        {title:"Grand Picnic", time:26, req:{meat:2, cheese:2, fruit:2, cracker:2}},
+        {title:"Sugar Rush", time:28, req:{sweet:4, fruit:2}},
+        {title:"Mediterranean", time:30, req:{olive:3, cracker:2, veg:2, cheese:1}},
+        {title:"Protein Mega", time:32, req:{meat:4, egg:2, nut:1}},
+        {title:"Fruit Carnival", time:34, req:{fruit:5, sweet:1}},
+        {title:"After Dark", time:35, req:{meat:2, cheese:2, sweet:2, nut:2}},
+        {title:"Wedding Board", time:36, req:{garnish:3, meat:2, cheese:2, fruit:2}},
+        {title:"The Deluxe", time:38, req:{meat:3, cheese:3, cracker:3, olive:2}},
+        {title:"Charcuterie God", time:40, req:{meat:3, cheese:3, fruit:3, cracker:3, nut:2}},
+        {title:"Veggie Supreme", time:42, req:{veg:4, garnish:2, nut:2, cheese:2}},
+        {title:"Pastry Chef", time:44, req:{sweet:4, cracker:3, fruit:2, nut:2}},
+        {title:"Global Feast", time:46, req:{meat:4, cheese:4, olive:3, veg:2}},
+        {title:"Kitchen Sink", time:48, req:{meat:3, cheese:3, cracker:3, fruit:3, sweet:2, nut:2, olive:2}},
+        {title:"ULTIMATE LEGEND", time:55, req:{meat:5, cheese:5, cracker:4, fruit:4, olive:3, veg:3, nut:2, garnish:2}}
     ];
 
     function init() {
@@ -93,8 +109,8 @@
         document.getElementById('lvl-display').innerText = "LVL " + (currentLevel + 1);
         document.getElementById('order-title').innerText = data.title;
         let details = "";
-        for (let k in data.req) details += `${data.req[k]}x ${k.toUpperCase()} • `;
-        document.getElementById('order-details').innerText = details.slice(0, -2);
+        for (let k in data.req) details += `<span class="req-chip">${data.req[k]}x ${k.toUpperCase()}</span>`;
+        document.getElementById('order-details').innerHTML = details;
         const tray = document.getElementById('tray');
         const board = document.getElementById('board');
         tray.innerHTML = ''; board.innerHTML = '';
@@ -123,10 +139,11 @@
             timeLeft--;
             const pct = (timeLeft / maxTime) * 100;
             fill.style.width = pct + '%';
-            if (pct < 30) fill.style.background = 'var(--danger)';
+            if (pct < 25) fill.style.background = 'var(--danger)';
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert("OUT OF TIME! Restarting from Level 1.");
+                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                alert("TIME OUT! The legend faded. Back to Level 1.");
                 currentLevel = 0; init();
             }
         }, 10);
@@ -142,20 +159,20 @@
         if (win) {
             clearInterval(timerInterval);
             document.getElementById('msg').style.color = 'var(--success)';
-            document.getElementById('msg').innerText = "SERVED!";
-            if (navigator.vibrate) navigator.vibrate(40);
+            document.getElementById('msg').innerText = "PERFECT!";
+            if (navigator.vibrate) navigator.vibrate(60);
             currentLevel++;
-            setTimeout(() => { document.getElementById('msg').innerText = ""; init(); }, 600);
+            setTimeout(() => { document.getElementById('msg').innerText = ""; init(); }, 500);
         } else {
             document.getElementById('msg').style.color = 'var(--danger)';
             document.getElementById('msg').innerText = "WRONG!";
-            if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+            if (navigator.vibrate) navigator.vibrate([50, 50, 50, 50]);
         }
     }
 
     function showVictory() {
         clearInterval(timerInterval);
-        document.body.innerHTML = `<div style="text-align:center; padding-top:30vh"><h1>🔥</h1><h2>LEGENDARY CHEF</h2><button onclick="location.reload()">PLAY AGAIN</button></div>`;
+        document.body.innerHTML = `<div style="text-align:center; padding-top:30vh"><h1>🌌</h1><h2 style="font-size:2rem">CHARCUTERIE GOD</h2><button onclick="location.reload()">ASCEND AGAIN</button></div>`;
     }
     init();
 </script>
