@@ -3,28 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: Career Mode</title>
+    <title>The Rustic Board: 35 Level Career</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap');
+        
         :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; --paper: #fffcf2; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
+        
+        body { font-family: 'Quicksand', sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
+        h1, h2, h3, b, button, .money-text { font-family: 'Fredoka One', cursive; letter-spacing: 0.5px; }
+
         #game-container { width: 100%; height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 20px; border-radius: 20px; border-top: 10px solid var(--primary); width: 100%; max-width: 360px; text-align: center; }
+        .story-box { background: var(--paper); padding: 20px; border-radius: 25px; border: 4px solid var(--primary); width: 100%; max-width: 360px; text-align: center; }
+        
         .chef-avatar { font-size: 80px; margin-bottom: 5px; display: block; }
-        .chef-tag { font-weight: 900; color: var(--primary); font-size: 14px; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .chef-tag { color: var(--primary); font-size: 14px; text-transform: uppercase; margin-bottom: 5px; display: block; }
+
         .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-        .order-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; }
-        #order-details { font-size: 12px; color: #111; font-weight: 800; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .req-chip { background: #f0f0f0; padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; }
+        
+        .order-card { background: white; padding: 12px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; box-sizing: border-box; }
+        #order-details { font-size: 13px; color: #111; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .req-chip { background: #f0edff; padding: 3px 8px; border-radius: 10px; color: var(--primary); border: 1px solid #dcd3ff; font-weight: 700; }
+
         .play-area { display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center; }
-        .board { width: 240px; min-height: 140px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
-        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 60px; }
-        #egg-timer { font-size: 40px; }
+        .board { width: 240px; min-height: 150px; background: var(--wood); border: 8px solid var(--bark); border-radius: 45px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+
+        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 65px; }
+        #egg-timer { font-size: 45px; }
         #timer-text { font-weight: 900; font-size: 14px; margin-top: 5px; font-variant-numeric: tabular-nums; }
-        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; background: rgba(255,255,255,0.6); padding: 12px; border-radius: 20px; box-sizing: border-box; }
-        .item { font-size: 40px; cursor: pointer; user-select: none; display: flex; justify-content: center; align-items: center; }
-        button#serve-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-weight: 900; font-size: 20px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; }
-        .money-text { color: #2ecc71; font-weight: 900; font-size: 18px; }
+
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; background: white; padding: 12px; border-radius: 20px; box-shadow: 0 4px 0 #ddd; box-sizing: border-box; }
+        .item { font-size: 42px; cursor: pointer; user-select: none; display: flex; justify-content: center; align-items: center; }
+        
+        button#serve-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-size: 22px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
+        .money-text { color: #2ecc71; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -33,13 +46,13 @@
 
 <div id="game-container">
     <div class="header">
-        <div style="font-weight: 900; font-size: 1.1rem;">MAYA'S RUSTIC BOARD</div>
+        <div style="font-size: 1.2rem; color: var(--primary);">RUSTIC BOARD</div>
         <div id="lives-display">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b id="order-title">Level <span id="level-num">1</span>/15</b>
+            <b id="order-title">Level <span id="level-num">1</span>/35</b>
             <span class="money-text">$<span id="score-display">0.00</span></span>
         </div>
         <div id="order-details"></div>
@@ -72,22 +85,43 @@
         {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🥯', t:'cracker', v:2.0}, {e:'🍯', t:'sweet', v:3.0}
     ];
 
+    // GENERATING 35 LEVELS
     const levels = [
-        { c: "Neighbor", n: "Just a cheese and cracker snack, please!", t: 8, r: { cheese: 1, cracker: 1 }, p: 15 },
-        { c: "Student", n: "Study fuel! I need 2 fruits and a sweet.", t: 10, r: { fruit: 2, sweet: 1 }, p: 20 },
-        { c: "Coach", n: "Protein! 1 egg and 1 meat, pronto!", t: 7, r: { egg: 1, meat: 1 }, p: 18 },
-        { c: "The Office", n: "Big meeting! 3 meats and 2 crackers!", t: 12, r: { meat: 3, cracker: 2 }, p: 35 },
-        { c: "Critic", n: "Impress me. 2 olives, 2 cheeses, 1 garnish.", t: 15, r: { olive: 2, cheese: 2, garnish: 1 }, p: 50 },
-        { c: "Influencer", n: "Make it pretty! 3 fruits, 1 sweet, 1 garnish.", t: 12, r: { fruit: 3, sweet: 1, garnish: 1 }, p: 30 },
-        { c: "Grandma", n: "A veggie board for my garden club! 3 veg.", t: 10, r: { veg: 3 }, p: 22 },
-        { c: "Hiker", n: "Salt and energy! 2 nuts, 1 meat, 1 cracker.", t: 9, r: { nut: 2, meat: 1, cracker: 1 }, p: 25 },
-        { c: "Date Night", n: "Romantic! 2 sweets, 2 fruits, 1 cheese.", t: 12, r: { sweet: 2, fruit: 2, cheese: 1 }, p: 40 },
-        { c: "The Mayor", n: "The city's best: 2 meats, 2 olives, 2 cheeses.", t: 14, r: { meat: 2, olive: 2, cheese: 2 }, p: 60 },
-        { c: "Toddler", n: "Fruit and crackers only! 3 of each.", t: 15, r: { fruit: 3, cracker: 3 }, p: 25 },
-        { c: "Chef Friend", n: "Test me: 1 of everything! Meat, veg, egg, nut.", t: 12, r: { meat: 1, veg: 1, egg: 1, nut: 1 }, p: 45 },
-        { c: "Investor", n: "Business lunch: 3 cheeses, 3 meats, 1 olive.", t: 15, r: { cheese: 3, meat: 3, olive: 1 }, p: 75 },
-        { c: "Party Host", n: "Huge order! 4 crackers, 2 fruits, 2 sweets.", t: 18, r: { cracker: 4, fruit: 2, sweet: 2 }, p: 55 },
-        { c: "VIP Gala", n: "The ultimate: 2 meats, 2 cheeses, 2 olives, 2 garnish, 2 sweets.", t: 20, r: { meat: 2, cheese: 2, olive: 2, garnish: 2, sweet: 2 }, p: 150 }
+        { c: "Neighbor", n: "Welcome! 1 cheese, 1 cracker.", t: 8, r: { cheese: 1, cracker: 1 }, p: 10 },
+        { c: "Student", n: "Study fuel! 2 fruit, 1 sweet.", t: 10, r: { fruit: 2, sweet: 1 }, p: 15 },
+        { c: "Coach", n: "Protein! 1 egg, 1 meat.", t: 7, r: { egg: 1, meat: 1 }, p: 12 },
+        { c: "Office", n: "Meeting! 3 meat, 2 cracker.", t: 12, r: { meat: 3, cracker: 2 }, p: 30 },
+        { c: "The Critic", n: "Impress me: 2 olives, 2 cheese, 1 garnish.", t: 15, r: { olive: 2, cheese: 2, garnish: 1 }, p: 45 },
+        { c: "Influencer", n: "Pretty! 3 fruit, 1 garnish.", t: 10, r: { fruit: 3, garnish: 1 }, p: 25 },
+        { c: "Grandma", n: "Garden club: 4 veg.", t: 12, r: { veg: 4 }, p: 20 },
+        { c: "Hiker", n: "Energy! 2 nut, 1 meat, 2 cracker.", t: 11, r: { nut: 2, meat: 1, cracker: 2 }, p: 28 },
+        { c: "Date Night", n: "Romantic: 2 sweet, 2 fruit, 1 cheese.", t: 13, r: { sweet: 2, fruit: 2, cheese: 1 }, p: 35 },
+        { c: "The Mayor", n: "Classy: 2 meat, 2 olive, 2 cheese.", t: 14, r: { meat: 2, olive: 2, cheese: 2 }, p: 50 },
+        { c: "Artist", n: "Colorful: 4 fruit, 1 garnish.", t: 12, r: { fruit: 4, garnish: 1 }, p: 22 },
+        { c: "Biker", n: "Salts! 2 nut, 2 olive, 1 meat.", t: 10, r: { nut: 2, olive: 2, meat: 1 }, p: 30 },
+        { c: "Doctor", n: "Brain food: 1 nut, 1 fruit, 1 egg.", t: 8, r: { nut: 1, fruit: 1, egg: 1 }, p: 18 },
+        { c: "Baker", n: "Sweets! 3 sweet, 2 cracker.", t: 12, r: { sweet: 3, cracker: 2 }, p: 25 },
+        { c: "VIP Gala", n: "Gala: 2 meat, 2 cheese, 2 olive, 2 garnish, 2 sweet.", t: 18, r: { meat: 2, cheese: 2, olive: 2, garnish: 2, sweet: 2 }, p: 100 },
+        { c: "Kid's Party", n: "Bites! 3 cracker, 3 fruit.", t: 14, r: { cracker: 3, fruit: 3 }, p: 20 },
+        { c: "Gym Rat", n: "Gains! 3 egg, 2 meat.", t: 10, r: { egg: 3, meat: 2 }, p: 35 },
+        { c: "Teacher", n: "Recess: 2 nut, 2 fruit.", t: 9, r: { nut: 2, fruit: 2 }, p: 15 },
+        { c: "Farmer", n: "Fresh: 3 veg, 2 egg.", t: 11, r: { veg: 3, egg: 2 }, p: 25 },
+        { c: "Lawyer", n: "Long night: 2 meat, 2 cheese, 2 cracker.", t: 13, r: { meat: 2, cheese: 2, cracker: 2 }, p: 40 },
+        { c: "Pilot", n: "Takeoff! 1 meat, 1 cheese, 1 nut.", t: 7, r: { meat: 1, cheese: 1, nut: 1 }, p: 20 },
+        { c: "Florist", n: "Petals: 3 garnish, 2 fruit.", t: 10, r: { garnish: 3, fruit: 2 }, p: 22 },
+        { c: "Gamer", n: "Snacks! 3 sweet, 3 nut.", t: 12, r: { sweet: 3, nut: 3 }, p: 28 },
+        { c: "CEO", n: "Boardroom: 4 cheese, 4 cracker.", t: 15, r: { cheese: 4, cracker: 4 }, p: 55 },
+        { c: "The Queen", n: "Royalty: 3 meat, 3 cheese, 3 garnish.", t: 20, r: { meat: 3, cheese: 3, garnish: 3 }, p: 120 },
+        { c: "Yoga Pro", n: "Zen: 3 veg, 3 fruit.", t: 15, r: { veg: 3, fruit: 3 }, p: 30 },
+        { c: "Mechanic", n: "Hefty! 4 meat, 2 egg.", t: 12, r: { meat: 4, egg: 2 }, p: 45 },
+        { c: "Writer", n: "Inspiration: 2 sweet, 2 olive, 2 cheese.", t: 12, r: { sweet: 2, olive: 2, cheese: 2 }, p: 35 },
+        { c: "Musician", n: "Gig fuel: 2 cracker, 2 fruit, 2 nut.", t: 12, r: { cracker: 2, fruit: 2, nut: 2 }, p: 30 },
+        { c: "Gold Medalist", n: "Power: 4 egg, 4 meat.", t: 15, r: { egg: 4, meat: 4 }, p: 80 },
+        { c: "Detective", n: "Clues: 2 olive, 2 nut, 1 meat.", t: 10, r: { olive: 2, nut: 2, meat: 1 }, p: 25 },
+        { c: "Sailor", n: "Salty: 4 olive, 2 cracker.", t: 12, r: { olive: 4, cracker: 2 }, p: 35 },
+        { c: "Librarian", n: "Quiet: 1 sweet, 1 cheese, 1 fruit.", t: 9, r: { sweet: 1, cheese: 1, fruit: 1 }, p: 15 },
+        { c: "Construction", n: "Break time! 5 meat, 5 cracker.", t: 20, r: { meat: 5, cracker: 5 }, p: 70 },
+        { c: "The Legend", n: "Final Challenge: 3 of everything meat, cheese, olive, fruit!", t: 30, r: { meat: 3, cheese: 3, olive: 3, fruit: 3 }, p: 250 }
     ];
 
     function showStory(mode = "prologue", earnings = 0) {
@@ -96,16 +130,16 @@
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `${chefMaya}<h2>Welcome to Career Mode!</h2><p>15 hungry clients are waiting. Can you help me reach our $500 goal?</p><button onclick="showStory('level')">Let's Work!</button>`;
+            content.innerHTML = `${chefMaya}<h2>35 Steps to Success!</h2><p>Maya's Rustic Board is officially open. Let's conquer all 35 clients!</p><button onclick="showStory('level')">Let's Go!</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `${chefMaya}<h2>Shift Interrupted</h2><p>We'll have to try again tomorrow.</p><button onclick="resetGame()">Restart Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>Kitchen Closed</h2><p>We'll get 'em next time!</p><button onclick="resetGame()">Restart Career</button>`;
         } else if (mode === "success") {
-            content.innerHTML = `${chefMaya}<h2>Great Board!</h2><p>Earned: <b>$${earnings.toFixed(2)}</b></p><button onclick="showStory('level')">Next Order ➡️</button>`;
+            content.innerHTML = `${chefMaya}<h2>Order Complete!</h2><p>You earned <b>$${earnings.toFixed(2)}</b>!</p><button onclick="showStory('level')">Next Order ➡️</button>`;
         } else if (currentLevel < levels.length) {
-            const d = levels[currentLevel];
-            content.innerHTML = `${chefMaya}<h3>Level ${currentLevel+1}: ${d.c}</h3><p>"${d.n}"</p><button onclick="startLevel()">Prep Now</button>`;
+            const data = levels[currentLevel];
+            content.innerHTML = `${chefMaya}<h3>Client ${currentLevel+1}: ${data.c}</h3><p>"${data.n}"</p><button onclick="startLevel()">Prep Board</button>`;
         } else {
-            content.innerHTML = `${chefMaya}<h2>Business Icon!</h2><p>Final Earnings: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>A Culinary Legend!</h2><p>Shift over! Total: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Game</button>`;
         }
     }
 
@@ -128,30 +162,30 @@
 
     function startLevel() {
         document.getElementById('story-overlay').style.display = 'none';
-        const d = levels[currentLevel];
-        timeLeft = d.t * 100;
+        const data = levels[currentLevel];
+        timeLeft = data.t * 100;
         document.getElementById('level-num').innerText = (currentLevel + 1);
         document.getElementById('board').innerHTML = '';
         renderTray();
-        let dets = "";
-        for (let k in d.r) dets += `<span class="req-chip">${d.r[k]}x ${k.toUpperCase()}</span>`;
-        document.getElementById('order-details').innerHTML = dets;
+        let details = "";
+        for (let k in data.r) details += `<span class="req-chip">${data.r[k]}x ${k.toUpperCase()}</span>`;
+        document.getElementById('order-details').innerHTML = details;
         startTimer();
     }
 
     function startTimer() {
         clearInterval(timerInterval);
-        const txt = document.getElementById('timer-text');
-        const egg = document.getElementById('egg-timer');
+        const timerText = document.getElementById('timer-text');
+        const eggIcon = document.getElementById('egg-timer');
         timerInterval = setInterval(() => {
             timeLeft--;
-            txt.innerText = (timeLeft / 100).toFixed(2) + "s";
+            timerText.innerText = (timeLeft / 100).toFixed(2) + "s";
             if (timeLeft < 300) {
-                egg.style.transform = `rotate(${Math.sin(timeLeft) * 15}deg)`;
-                txt.style.color = 'var(--danger)';
+                eggIcon.style.transform = `rotate(${Math.sin(timeLeft) * 15}deg)`;
+                timerText.style.color = 'var(--danger)';
             } else {
-                egg.style.transform = 'rotate(0deg)';
-                txt.style.color = '#000';
+                eggIcon.style.transform = 'rotate(0deg)';
+                timerText.style.color = '#000';
             }
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -163,18 +197,19 @@
     }
 
     function submitBoard() {
-        const d = levels[currentLevel];
+        const data = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
-        let counts = {}, val = 0;
+        let counts = {}, boardValue = 0;
         items.forEach(i => {
-            counts[i.dataset.type] = (counts[i.dataset.type] || 0) + 1;
-            val += parseFloat(i.dataset.val || 0);
+            let t = i.dataset.type;
+            counts[t] = (counts[t] || 0) + 1;
+            boardValue += parseFloat(i.dataset.val || 0);
         });
         let win = true;
-        for (let k in d.r) { if ((counts[k] || 0) < d.r[k]) win = false; }
+        for (let k in data.r) { if ((counts[k] || 0) < data.r[k]) win = false; }
         if (win) {
             clearInterval(timerInterval);
-            let earned = d.p + (timeLeft/100)*0.5 + (val*0.1);
+            let earned = data.p + (timeLeft/100)*0.50 + (boardValue * 0.1);
             bankAccount += earned;
             document.getElementById('score-display').innerText = bankAccount.toFixed(2);
             currentLevel++;
