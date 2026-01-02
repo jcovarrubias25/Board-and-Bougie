@@ -11,7 +11,7 @@
         body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
         #game-container { width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; padding: 8px; gap: 2px; }
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; }
+        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; max-height: 90vh; overflow-y: auto; }
         .story-box h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
         .story-box p { font-family: 'Quicksand', sans-serif; font-size: 19px; font-weight: 700; line-height: 1.4; color: #444; }
         .cust-quote { font-style: italic; color: #666; margin-bottom: 15px; display: block; border-left: 4px solid var(--primary); padding-left: 10px; text-align: left; }
@@ -58,6 +58,8 @@
     }
 
     let currentLevel = 0, bankAccount = 0, highScore = localStorage.getItem('rusticBoardHighScore') || 0, lives = 3, timerInterval, timeLeft;
+    const chefMayaTag = '<span style="font-size:80px">👩🏾‍🍳</span><br><span style="color:var(--primary); font-size: 24px;">Chef Maya</span>';
+
     let pantryItems = [
         {e:'🧀', t:'cheese'}, {e:'🧈', t:'cheese'}, {e:'🥚', t:'egg'}, {e:'🥩', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🍗', t:'meat'}, {e:'🍖', t:'meat'},
         {e:'🥨', t:'bread'}, {e:'🥖', t:'bread'}, {e:'🥐', t:'bread'}, {e:'🍞', t:'bread'}, {e:'🥯', t:'bread'}, {e:'🍇', t:'fruit'}, {e:'🍓', t:'fruit'},
@@ -66,16 +68,22 @@
         {e:'🥜', t:'nut'}, {e:'🌰', t:'nut'}, {e:'🌿', t:'garnish'}, {e:'🍃', t:'garnish'}, {e:'🦐', t:'meat'}, {e:'🍣', t:'meat'}, {e:'🍯', t:'sweet'}
     ];
 
-    const subjects = ["A world-class skier", "A weary architect", "A bubbly wedding planner", "A grumpy tech mogul", "A hopeful poet", "A local historian", "A curious astronaut on leave", "A very hungry jazz band", "A marathon runner", "A professional dog walker"];
-    const reasons = ["needs fuel for a secret project.", "is celebrating a major breakthrough.", "is hosting a tiny dinner party.", "wants to taste the famous Maya special.", "needs a pick-me-up after a long day.", "is trying to impress a first date.", "wants to treat the office staff.", "is planning a luxury picnic."];
-    const reactions = ["'Stunning. This belongs in a museum!'", "'I've never tasted anything so fresh.'", "'You really have a gift for pairing flavors.'", "'I'm coming back tomorrow, and I'm bringing friends.'", "'Simply divine. You've made my day.'", "'The structural integrity of this bread is perfect!'"];
+    const subjects = ["A skier", "An architect", "A planner", "A tech mogul", "A poet", "A historian", "An astronaut", "A jazz player", "A runner", "A traveler"];
+    const quotes = ["'Stunning quality!'", "'Exquisite taste!'", "'The best in town!'", "'Utterly divine!'", "'Truly an artist's work.'", "'So fresh and perfect!'"];
 
-    function getDynamicStory() {
-        const sub = subjects[Math.floor(Math.random()*subjects.length)];
-        const res = reasons[Math.floor(Math.random()*reasons.length)];
-        const rea = reactions[Math.floor(Math.random()*reactions.length)];
-        return { intro: `${sub} ${res}`, reaction: `${sub.split(' ').pop()}: ${rea}` };
-    }
+    const milestones = {
+        0: "I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!",
+        1: "Perfect start! Every board we sell brings us closer to getting that neon sign for the window.",
+        5: "Business is picking up! I might need to order more fancy honey jars soon.",
+        10: "Milestone! We just got featured in the local paper. The 'Maya Special' is a hit!",
+        20: "I've finally saved enough for a top-of-the-line walk-in fridge. Look at all this space!",
+        50: "Can you believe it? Maya's Board Shop is now a local celebrity hotspot!"
+    };
+
+    const fillerStories = [
+        "That cheese pairing was genius!", "The customer said this was the best bread they've had all year.",
+        "We're becoming the talk of the neighborhood!", "Speed is the secret ingredient!", "The shop smells amazing today!"
+    ];
 
     const levels = [];
     for(let i=1; i<=200; i++) {
@@ -84,21 +92,23 @@
         let r = {}; let types = ['cheese', 'meat', 'bread', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
         let shuffled = [...types].sort(() => 0.5 - Math.random());
         for(let j=0; j<diff; j++) { r[shuffled[j]] = Math.floor(Math.random() * 2) + 1; }
-        levels.push({ t: time, r: r, p: 20 + (i * 5), story: getDynamicStory() });
+        levels.push({ t: time, r: r, p: 20 + (i * 5) });
     }
 
     function showStory(mode = "prologue", earnings = 0) {
         const overlay = document.getElementById('story-overlay'); const content = document.getElementById('story-content');
         overlay.style.display = 'flex';
-        if (mode === "prologue") { content.innerHTML = `<h1>👩🏾‍🍳 Maya's Shop</h1><p>Ready to build your legacy?</p><button class="big-btn" onclick="startAudio(); showStory('level')">START</button>`; }
+        if (mode === "prologue") { content.innerHTML = `${chefMayaTag}<h2>Grand Opening</h2><p>${milestones[0]}</p><button class="big-btn" onclick="startAudio(); showStory('level')">OPEN SHOP</button>`; }
         else if (lives <= 0) {
             let checkpoint = currentLevel >= 50 ? 50 : Math.floor(currentLevel / 10) * 10;
-            content.innerHTML = `<h2>Closed</h2><p>Maya: 'Let's take a break.'<br>Checkpoint: Level ${checkpoint + 1}</p><button class="big-btn" onclick="currentLevel=${checkpoint}; lives=3; document.getElementById('lives-display').innerText='❤️❤️❤️'; showStory('level')">RETRY FROM CHECKPOINT</button>`;
+            content.innerHTML = `<h2>Closed</h2><p>Maya: 'We'll open back up soon.'<br>Checkpoint: Level ${checkpoint + 1}</p><button class="big-btn" onclick="currentLevel=${checkpoint}; lives=3; document.getElementById('lives-display').innerText='❤️❤️❤️'; showStory('level')">RETRY</button>`;
         } else if (mode === "success") {
-            const story = levels[currentLevel - 1].story;
-            content.innerHTML = `<h2>Success!</h2><div class="cust-quote">"${story.reaction}"</div><p style="color:var(--success)">+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT</button>`;
+            const cust = subjects[Math.floor(Math.random()*subjects.length)];
+            const quote = quotes[Math.floor(Math.random()*quotes.length)];
+            const mayaTxt = milestones[currentLevel] || fillerStories[Math.floor(Math.random()*fillerStories.length)];
+            content.innerHTML = `${chefMayaTag}<div class="cust-quote"><b>${cust}:</b> ${quote}</div><p>${mayaTxt}</p><p style="color:var(--success)">+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT</button>`;
         } else if (mode === "fail") {
-            content.innerHTML = `<h2>Missed it!</h2><p>The customer left... ${lives} lives remaining.</p><button class="big-btn" onclick="showStory('level')">TRY AGAIN</button>`;
+            content.innerHTML = `${chefMayaTag}<h2>Missed One!</h2><p>Maya: 'Don't worry, we'll get the next one!'</p><button class="big-btn" onclick="showStory('level')">CONTINUE</button>`;
         } else { overlay.style.display = 'none'; startLevel(); }
     }
 
@@ -138,7 +148,8 @@
         if (!error) { for (let k in counts) if (!d.r[k]) error = `No ${k.toUpperCase()}!`; }
         if (!error) { 
             clearInterval(timerInterval); playSound('ding'); let earned = d.p + (timeLeft/100); bankAccount += earned; 
-            if (bankAccount > highScore) { highScore = bankAccount; localStorage.setItem('rusticBoardHighScore', highScore); }
+            if (bankAccount > highScore) { highScore = bankAccount; localStorage.setItem('rusticBoardHighScore', highScore); document.getElementById('high-score-val').innerText = bankAccount.toFixed(2); }
+            document.getElementById('score-display').innerText = bankAccount.toFixed(2); 
             currentLevel++; showStory("success", earned); 
         } else { playSound('hint'); const btn = document.getElementById('serve-btn'); btn.style.background = 'var(--danger)'; btn.innerText = error; setTimeout(() => { btn.innerText = "SERVE ✨"; btn.style.background = 'var(--primary)'; }, 1000); }
     }
