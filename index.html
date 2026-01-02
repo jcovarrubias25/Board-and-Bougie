@@ -72,17 +72,17 @@
     const subjects = ["A hiker", "An artist", "A neighbor", "A detective", "A teacher", "A sailor", "A doctor", "A musician", "A local kid", "A food critic"];
     const quotes = ["'Just what I needed!'", "'A masterpiece of flavor.'", "'I'll be telling everyone!'", "'Incredible selection.'", "'The highlight of my week!'", "'So fresh, so good!'"];
     const milestones = { 0: "I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!", 1: "Perfect start! Every board we sell brings us closer to that neon sign.", 5: "Business is picking up! I might need to order more fancy honey jars soon.", 10: "Milestone! We just got featured in the local paper. The 'Maya Special' is a hit!", 20: "I've finally saved enough for a top-of-the-line walk-in fridge. Look at all this space!", 50: "Can you believe it? Maya's Board Shop is now a local celebrity hotspot!" };
-    const fillerStories = ["That pairing was genius!", " neighborhood favorite!", "Smells amazing today!", "The shop is buzzing!", "Maya: 'I love seeing these smiles.'"];
+    const fillerStories = ["That pairing was genius!", "A neighborhood favorite!", "Smells amazing today!", "The shop is buzzing!", "Maya: 'I love seeing these smiles.'"];
 
     function generateLevels() {
         const lvls = [];
         const types = ['cheese', 'meat', 'bread', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
         for(let i=1; i<=200; i++) {
             let config;
-            if(i <= 10) config = { label: "SMALL", count: [3, 5], time: 8 };
-            else if(i <= 25) config = { label: "MEDIUM", count: [6, 9], time: 12 };
-            else if(i <= 50) config = { label: "LARGE", count: [10, 12], time: 16 };
-            else config = { label: "EXTRA LARGE", count: [13, 15], time: 20 };
+            if(i <= 10) config = { label: "SMALL", count: [3, 5], time: 10 };
+            else if(i <= 25) config = { label: "MEDIUM", count: [6, 9], time: 15 };
+            else if(i <= 50) config = { label: "LARGE", count: [10, 12], time: 20 };
+            else config = { label: "EXTRA LARGE", count: [13, 15], time: 25 };
 
             let targetCount = Math.floor(Math.random() * (config.count[1] - config.count[0] + 1)) + config.count[0];
             let r = {}; let tempCount = 0;
