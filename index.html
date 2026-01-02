@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: Master Chef</title>
+    <title>The Rustic Board: Smooth Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap');
         
@@ -11,7 +11,6 @@
         
         body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
         
-        /* Larger screen usage (92vh) for more visibility without blocking URL bar */
         #game-container { width: 100%; height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; }
         
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
@@ -33,7 +32,6 @@
 
         .tray { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; width: 100%; background: white; padding: 10px; border-radius: 20px; box-shadow: 0 6px 0 #ddd; box-sizing: border-box; border: 2px solid #eee; }
         .item { font-size: 32px; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .item:active { transform: scale(1.2); }
         
         .big-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 60px; font-size: 28px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; margin-top: 15px; font-family: 'Fredoka One'; }
         
@@ -127,11 +125,9 @@
             r[t] = count;
             totalItems += count;
         }
-
         let timeLimit = 20; 
         if (totalItems <= 3) timeLimit = 10;
         else if (totalItems <= 6) timeLimit = 15;
-
         levels.push({ t: timeLimit, r: r, p: 20 + (i * 6), customer: customers[i % customers.length] });
     }
 
