@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: Chef Maya's Journey</title>
+    <title>The Rustic Board: Stories</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap');
         
@@ -11,38 +11,36 @@
         
         body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
         
-        #game-container { width: 100%; height: 88vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; }
+        /* Reduced height to 82vh to keep URL bar and browser nav completely clear */
+        #game-container { width: 100%; height: 82vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; margin-top: 10px; }
         
-        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 30px; border-radius: 35px; border: 8px solid var(--primary); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .story-box { background: var(--paper); padding: 25px; border-radius: 35px; border: 8px solid var(--primary); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
         
-        .chef-avatar { font-size: 110px; margin-bottom: 15px; display: block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); }
-        .chef-tag { color: var(--primary); font-size: 20px; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .chef-avatar { font-size: 80px; margin-bottom: 10px; display: block; }
+        .customer-avatar { font-size: 60px; margin-bottom: 5px; display: block; }
 
-        .order-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 6px solid var(--primary); width: 100%; box-sizing: border-box; }
-        #order-title { font-size: 28px; color: #333; display: block; margin-bottom: 10px; }
-        #order-details { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 10px; }
-        .req-chip { background: #f0edff; padding: 8px 15px; border-radius: 15px; color: var(--primary); border: 2px solid #dcd3ff; }
+        .order-card { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 6px solid var(--primary); width: 100%; box-sizing: border-box; }
+        #order-title { font-size: 24px; color: var(--primary); display: block; margin-bottom: 5px; }
+        #order-details { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; }
+        .req-chip { background: #f0edff; padding: 6px 12px; border-radius: 12px; color: var(--primary); border: 2px solid #dcd3ff; }
 
         .play-area { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center; }
-        .board { width: 230px; min-height: 160px; background: var(--wood); border: 12px solid var(--bark); border-radius: 55px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 6px; padding: 15px; box-shadow: inset 0 0 40px rgba(0,0,0,0.5); }
+        .board { width: 220px; min-height: 140px; background: var(--wood); border: 12px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px; padding: 10px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
 
-        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 85px; }
-        #egg-timer { font-size: 55px; }
-        #timer-text { font-size: 22px; margin-top: 5px; color: #333; }
+        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 75px; }
+        #egg-timer { font-size: 45px; }
+        #timer-text { font-size: 18px; margin-top: 5px; color: #333; }
 
-        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; background: white; padding: 15px; border-radius: 30px; box-shadow: 0 10px 0 #ddd; box-sizing: border-box; }
-        .item { font-size: 46px; cursor: pointer; user-select: none; }
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; background: white; padding: 12px; border-radius: 25px; box-shadow: 0 8px 0 #ddd; box-sizing: border-box; }
+        .item { font-size: 40px; cursor: pointer; user-select: none; }
         
-        /* HUGE Story Buttons */
-        .big-btn { background: var(--primary); color: white; border: none; padding: 25px; border-radius: 60px; font-size: 32px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; margin-top: 20px; font-family: 'Fredoka One'; }
-        .big-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #5a3ec7; }
+        .big-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 60px; font-size: 28px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; margin-top: 15px; font-family: 'Fredoka One'; }
         
-        button#serve-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 50px; font-size: 28px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; }
+        button#serve-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; font-size: 24px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; }
         
-        .money-text { color: var(--success); font-size: 30px; }
-        h2 { font-size: 36px; color: var(--primary); margin: 15px 0; }
-        p { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 700; color: #444; line-height: 1.4; }
+        .money-text { color: var(--success); font-size: 26px; }
+        p.story-p { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; color: #444; line-height: 1.4; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -50,9 +48,9 @@
 <div id="story-overlay"><div class="story-box" id="story-content"></div></div>
 
 <div id="game-container">
-    <div class="header" style="width: 100%; display: flex; justify-content: space-between;">
-        <div style="font-size: 1.5rem; color: var(--primary);">RUSTIC BOARD</div>
-        <div id="lives-display" style="font-size: 28px;">❤️❤️❤️</div>
+    <div class="header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 1.2rem; color: var(--primary);">THE RUSTIC BOARD</div>
+        <div id="lives-display" style="font-size: 24px;">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
@@ -72,7 +70,7 @@
     </div>
 
     <div class="tray" id="tray"></div>
-    <button id="serve-btn" onclick="submitBoard()">SERVE CLIENT ✨</button>
+    <button id="serve-btn" onclick="submitBoard()">SERVE ✨</button>
 </div>
 
 <script>
@@ -80,45 +78,45 @@
     let bankAccount = 0.00;
     let lives = 3;
     let timerInterval, timeLeft;
-    const chefMaya = '<span class="chef-avatar">👩🏾‍🍳</span><span class="chef-tag">Chef Maya</span>';
+
+    const customers = [
+        { name: "Old Man Jenkins", e: "👴🏻", why: "My grandkids are visiting and I want to show them I'm still the 'Cool Grandpa'." },
+        { name: "Officer Miller", e: "👮‍♂️", why: "Double shift at the precinct. I need something better than donuts today." },
+        { name: "Artist Luna", e: "👩‍🎨", why: "I'm hosting an art gallery opening. The snacks must be as beautiful as the paintings!" },
+        { name: "Coach Mike", e: "👟", why: "The team won the championship! We need a victory feast." },
+        { name: "Teacher Sarah", e: "👩‍🏫", why: "It's the last day of school. I need a treat to survive the grading pile." },
+        { name: "Gamer Toby", e: "🎧", why: "I'm doing a 24-hour charity livestream. Finger foods only!" },
+        { name: "Mayor Wilson", e: "🎩", why: "The city council meeting is going long. Keep us fed and happy." }
+    ];
 
     const milestones = {
-        0: { h: "The Beginning", p: "I've spent years perfecting my charcuterie boards for friends. Today, I'm finally opening 'The Rustic Board' out of my home kitchen!" },
-        10: { h: "Market Stand!", p: "We've outgrown the kitchen! I just got a spot at the downtown Farmer's Market. The lines are getting longer!" },
-        20: { h: "Boutique Shop", p: "I signed a lease! A cute little shop on 5th Ave. It has real wooden tables and a giant cooler for the fine cheeses." },
-        30: { h: "Viral Moment", p: "A famous food blogger posted my 'Midnight Board.' My phone won't stop ringing! Everyone wants a taste." },
-        40: { h: "Expanding!", p: "I've hired two assistants. We are now catering local weddings and corporate events. Let's keep the quality high!" },
-        50: { h: "The Food Truck", p: "We've got a customized 'Rustic Truck' to bring our boards to festivals. It's high energy and fast paced!" },
-        60: { h: "The Cookbook", p: "I'm officially a published author! 'The Art of the Board' is a bestseller. The orders are getting more complex." },
-        70: { h: "Luxury Lounge", p: "We just opened a VIP Charcuterie Lounge in the city. High-end clients mean high-end expectations!" },
-        80: { h: "Global Fame", p: "I've been invited to judge a TV cooking show. 'The Rustic Board' is now a household name across the country!" },
-        90: { h: "Culinary Empire", p: "From my kitchen to the world. We are opening our 10th location today. One final push to 100!" }
+        0: "Maya's Dream: I'm finally moving my business from my kitchen table to a real storefront. Let's make this work!",
+        10: "Growth: Word is spreading! We just got featured in the local paper. The orders are getting complex!",
+        20: "The Deli Upgrade: I've invested in a better fridge. Now we can offer even more specialty meats and cheeses!",
+        50: "The Empire: Halfway there! Chef Maya is now a local celebrity. People travel for miles for our boards."
     };
 
     const pantryItems = [
         {e:'🧀', t:'cheese', v:2.5}, {e:'🥩', t:'meat', v:4.0}, {e:'🥓', t:'meat', v:3.0}, {e:'🍗', t:'meat', v:3.5}, {e:'🥚', t:'egg', v:1.5}, {e:'🥨', t:'cracker', v:1.0},
         {e:'🥖', t:'cracker', v:1.5}, {e:'🥐', t:'cracker', v:2.0}, {e:'🍞', t:'cracker', v:1.0}, {e:'🍇', t:'fruit', v:2.0}, {e:'🍓', t:'fruit', v:2.5}, {e:'🫐', t:'fruit', v:3.0},
-        {e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🍬', t:'sweet', v:0.5},
-        {e:'🥜', t:'nut', v:2.0}, {e:'🌰', t:'nut', v:2.0}, {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🍃', t:'garnish', v:1.0},
-        {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🦐', t:'meat', v:5.0}, {e:'🧁', t:'sweet', v:4.0}
+        {e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🥜', t:'nut', v:2.0}, 
+        {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🥕', t:'veg', v:1.5}, {e:'🦐', t:'meat', v:5.0}
     ];
 
     const levels = [];
     const types = ['cheese', 'meat', 'cracker', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
 
-    // Generate 100 UNIQUE levels
     for(let i=1; i<=100; i++) {
-        let diff = Math.floor(i / 10) + 1;
+        let diff = Math.floor(i / 8) + 2; // Starts with at least 2-3 types
         let r = {};
-        // Shuffle types to ensure randomness
         let shuffled = [...types].sort(() => 0.5 - Math.random());
-        let numTypes = Math.min(diff + 1, 6);
-        
+        let numTypes = Math.min(diff, 7);
         for(let j=0; j<numTypes; j++) {
             let t = shuffled[j];
-            r[t] = Math.floor(Math.random() * diff) + 1;
+            r[t] = Math.floor(Math.random() * (Math.floor(i/15) + 2)) + 1;
         }
-        levels.push({ t: Math.max(30 - diff, 12), r: r, p: 10 + (i * 5) });
+        let cust = customers[i % customers.length];
+        levels.push({ t: Math.max(30 - Math.floor(i/5), 15), r: r, p: 15 + (i * 6), customer: cust });
     }
 
     function showStory(mode = "prologue", earnings = 0) {
@@ -127,19 +125,15 @@
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `${chefMaya}<h2>${milestones[0].h}</h2><p>${milestones[0].p}</p><button class="big-btn" onclick="showStory('level')">START BUSINESS</button>`;
+            content.innerHTML = `<span class="chef-avatar">👩🏾‍🍳</span><h2>Chef Maya</h2><p class="story-p">${milestones[0]}</p><button class="big-btn" onclick="showStory('level')">START JOURNEY</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `${chefMaya}<h2>Burnout...</h2><p>Running a business is hard! Let's take a rest and try this shift again.</p><button class="big-btn" onclick="resetGame()">RESTART</button>`;
+            content.innerHTML = `<h2>Closed...</h2><p class="story-p">The shop needs a break. Let's try this shift again.</p><button class="big-btn" onclick="resetGame()">REOPEN</button>`;
         } else if (mode === "success") {
-            if (milestones[currentLevel]) {
-                content.innerHTML = `${chefMaya}<h2>${milestones[currentLevel].h}</h2><p>${milestones[currentLevel].p}</p><button class="big-btn" onclick="showStory('level')">NEXT LEVEL</button>`;
-            } else {
-                content.innerHTML = `${chefMaya}<h2>Order Complete!</h2><p>You earned <span class="money-text">$${earnings.toFixed(2)}</span></p><button class="big-btn" onclick="showStory('level')">PREP NEXT BOARD</button>`;
-            }
+            let mileText = milestones[currentLevel] ? `<h2>Milestone!</h2><p class="story-p">${milestones[currentLevel]}</p>` : `<h2>Great Job!</h2>`;
+            content.innerHTML = `<span class="chef-avatar">👩🏾‍🍳</span>${mileText}<p class="story-p">You earned $${earnings.toFixed(2)}!</p><button class="big-btn" onclick="showStory('level')">NEXT CUSTOMER</button>`;
         } else if (currentLevel < levels.length) {
-            content.innerHTML = `${chefMaya}<h3>Level ${currentLevel+1}</h3><p>"I've heard great things about your boards. Impress me!"</p><button class="big-btn" onclick="startLevel()">BEGIN PREP</button>`;
-        } else {
-            content.innerHTML = `${chefMaya}<h2>Culinary Legend</h2><p>100 levels completed! Final Bank: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">NEW CAREER</button>`;
+            const d = levels[currentLevel];
+            content.innerHTML = `<span class="customer-avatar">${d.customer.e}</span><h3>${d.customer.name}</h3><p class="story-p">"${d.customer.why}"</p><button class="big-btn" onclick="startLevel()">PREP BOARD</button>`;
         }
     }
 
@@ -154,7 +148,6 @@
                 bItem.dataset.type = item.t; bItem.dataset.val = item.v;
                 bItem.onclick = () => bItem.remove();
                 document.getElementById('board').appendChild(bItem);
-                if(navigator.vibrate) navigator.vibrate(10);
             };
             tray.appendChild(d);
         });
@@ -162,13 +155,13 @@
 
     function startLevel() {
         document.getElementById('story-overlay').style.display = 'none';
-        const data = levels[currentLevel];
-        timeLeft = data.t * 100;
+        const d = levels[currentLevel];
+        timeLeft = d.t * 100;
         document.getElementById('level-num').innerText = (currentLevel + 1);
         document.getElementById('board').innerHTML = '';
         renderTray();
         let dets = "";
-        for (let k in data.r) dets += `<span class="req-chip">${data.r[k]}x ${k.toUpperCase()}</span>`;
+        for (let k in d.r) dets += `<span class="req-chip">${d.r[k]}x ${k.toUpperCase()}</span>`;
         document.getElementById('order-details').innerHTML = dets;
         startTimer();
     }
@@ -181,7 +174,7 @@
             timeLeft--;
             txt.innerText = (timeLeft / 100).toFixed(2) + "s";
             if (timeLeft < 500) {
-                egg.style.transform = `rotate(${Math.sin(timeLeft) * 20}deg)`;
+                egg.style.transform = `rotate(${Math.sin(timeLeft) * 15}deg)`;
                 txt.style.color = 'var(--danger)';
             } else {
                 egg.style.transform = 'rotate(0deg)';
@@ -197,7 +190,7 @@
     }
 
     function submitBoard() {
-        const data = levels[currentLevel];
+        const d = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
         let counts = {}, val = 0;
         items.forEach(i => {
@@ -205,10 +198,10 @@
             val += parseFloat(i.dataset.val || 0);
         });
         let win = true;
-        for (let k in data.r) { if ((counts[k] || 0) < data.r[k]) win = false; }
+        for (let k in d.r) { if ((counts[k] || 0) < d.r[k]) win = false; }
         if (win) {
             clearInterval(timerInterval);
-            let earned = data.p + (timeLeft/100) + (val * 0.2);
+            let earned = d.p + (timeLeft/100) + (val * 0.2);
             bankAccount += earned;
             document.getElementById('score-display').innerText = bankAccount.toFixed(2);
             currentLevel++;
