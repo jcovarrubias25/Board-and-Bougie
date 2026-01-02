@@ -1,157 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Charcuterie Challenge</title>
-
 <style>
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f8f6f2;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #fdfaf5;
     margin: 0;
-    padding: 16px;
-    text-align: center;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    touch-action: manipulation; /* Stops accidental zooming */
   }
 
-  h1 {
-    margin-bottom: 4px;
-  }
-
-  .order {
-    background: #ffffff;
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-
-  .timer {
-    font-weight: bold;
-    margin: 8px 0;
-    font-size: 18px;
-  }
-
+  /* The Wooden Board Look */
   .board {
-    min-height: 180px;
-    background: #e8d8c3;
-    border-radius: 16px;
-    padding: 12px;
-    margin-bottom: 16px;
+    width: 90%;
+    min-height: 200px;
+    background: #d2b48c; /* Wood color */
+    border: 8px solid #bc9d70;
+    border-radius: 50%; /* Oval platter shape */
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 15px rgba(0,0,0,0.1);
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    align-content: center;
     justify-content: center;
-  }
-
-  .tray {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    transition: transform 0.2s;
   }
 
   .item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px;
-    cursor: grab;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    user-select: none;
-  }
-
-  button {
-    margin-top: 12px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: none;
-    background: #7a5cfa;
-    color: white;
-    font-size: 16px;
+    font-size: 40px;
     cursor: pointer;
+    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
   }
 
-  .message {
-    margin-top: 12px;
-    font-weight: bold;
+  .item:active {
+    transform: scale(1.4); /* Feedback when touched */
+  }
+
+  .tray {
+    background: #fff;
+    padding: 15px;
+    border-radius: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  /* Game UI */
+  .order-card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-left: 5px solid #7a5cfa;
+  }
+
+  .win-animation {
+    animation: celebrate 0.5s ease infinite alternate;
+  }
+
+  @keyframes celebrate {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
   }
 </style>
-</head>
 
-<body>
-
-<h1>🧀 Charcuterie Challenge</h1>
-
-<div class="order">
-  <strong>Order:</strong> Girls’ Night In  
-  <br>✔ 2 Cheeses  
-  <br>✔ 1 Fruit  
-  <br>✔ 1 Sweet  
+<div class="order-card">
+  <strong>GIRLS NIGHT ORDER:</strong><br>
+  🧀 2 Cheese · 🍇 1 Fruit · 🍫 1 Sweet
 </div>
 
-<div class="timer">⏱ Time: <span id="time">60</span>s</div>
+<div class="board" id="board">
+  </div>
 
-<div class="board" id="board" ondragover="event.preventDefault()" ondrop="drop(event)">
-  <em>Drag items here</em>
+<div class="tray" id="tray">
+  <div class="item" data-type="cheese">🧀</div>
+  <div class="item" data-type="cheese">🧀</div>
+  <div class="item" data-type="fruit">🍇</div>
+  <div class="item" data-type="fruit">🍓</div>
+  <div class="item" data-type="sweet">🍫</div>
+  <div class="item" data-type="sweet">🍪</div>
 </div>
 
-<h3>Ingredient Tray</h3>
-<div class="tray">
-  <div class="item" draggable="true" data-type="cheese">🧀 Brie</div>
-  <div class="item" draggable="true" data-type="cheese">🧀 Cheddar</div>
-  <div class="item" draggable="true" data-type="fruit">🍓 Strawberries</div>
-  <div class="item" draggable="true" data-type="fruit">🍇 Grapes</div>
-  <div class="item" draggable="true" data-type="sweet">🍫 Chocolate</div>
-  <div class="item" draggable="true" data-type="sweet">🍪 Cookies</div>
-</div>
-
-<button onclick="submitBoard()">Submit Board</button>
-
-<div class="message" id="message"></div>
+<button onclick="submitBoard()" id="btn">Submit Platter</button>
+<p id="msg"></p>
 
 <script>
-  let timeLeft = 60;
-  let timer = setInterval(() => {
-    timeLeft--;
-    document.getElementById("time").textContent = timeLeft;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      endGame(false, "Time’s up!");
-    }
-  }, 1000);
+  // TAP TO MOVE LOGIC
+  const tray = document.getElementById('tray');
+  const board = document.getElementById('board');
 
-  document.querySelectorAll(".item").forEach(item => {
-    item.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("text/plain", item.outerHTML);
-      item.remove();
+  document.querySelectorAll('.item').forEach(item => {
+    item.addEventListener('click', () => {
+      // If it's in the tray, move to board. If in board, move to tray.
+      if (item.parentElement.id === 'tray') {
+        board.appendChild(item);
+      } else {
+        tray.appendChild(item);
+      }
+      checkProgress();
     });
   });
 
-  function drop(e) {
-    const data = e.dataTransfer.getData("text/plain");
-    e.target.closest(".board").insertAdjacentHTML("beforeend", data);
+  function checkProgress() {
+    // Optional: Add a sound or haptic feedback here later
   }
 
   function submitBoard() {
-    const items = document.querySelectorAll("#board .item");
+    const onBoard = board.querySelectorAll('.item');
     let counts = { cheese: 0, fruit: 0, sweet: 0 };
-
-    items.forEach(item => {
+    
+    onBoard.forEach(item => {
       counts[item.dataset.type]++;
     });
 
     if (counts.cheese >= 2 && counts.fruit >= 1 && counts.sweet >= 1) {
-      endGame(true, "🎉 Order Complete! Beautiful board!");
+      document.getElementById('msg').innerHTML = "✨ 5 STARS! The platter is perfect!";
+      board.classList.add('win-animation');
     } else {
-      endGame(false, "❌ Order incorrect. Try again!");
+      document.getElementById('msg').innerHTML = "Missing items! Follow the recipe.";
     }
   }
-
-  function endGame(win, text) {
-    clearInterval(timer);
-    document.getElementById("message").textContent = text;
-  }
 </script>
-
-</body>
-</html>
