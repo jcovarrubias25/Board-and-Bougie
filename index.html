@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: High Score</title>
+    <title>The Rustic Board: Gourmet Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap');
         
@@ -11,39 +11,36 @@
         
         body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
         
-        #game-container { width: 100%; height: 82vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; margin-top: 10px; }
+        /* Adjusted to 85vh to fit more rows but stay clear of URL bar */
+        #game-container { width: 100%; height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; margin-top: 5px; }
         
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 25px; border-radius: 35px; border: 8px solid var(--primary); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-        
-        .chef-avatar { font-size: 80px; margin-bottom: 10px; display: block; }
-        .customer-avatar { font-size: 60px; margin-bottom: 5px; display: block; }
+        .story-box { background: var(--paper); padding: 25px; border-radius: 35px; border: 8px solid var(--primary); width: 100%; max-width: 400px; text-align: center; }
 
-        .header { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-        #high-score-display { font-size: 14px; color: var(--bark); text-transform: uppercase; background: #fff; padding: 4px 12px; border-radius: 20px; border: 2px solid #eee; }
+        .header { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        #high-score-display { font-size: 12px; color: var(--bark); text-transform: uppercase; background: #fff; padding: 2px 10px; border-radius: 20px; border: 1px solid #eee; }
 
-        .order-card { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 6px solid var(--primary); width: 100%; box-sizing: border-box; }
-        #order-title { font-size: 24px; color: var(--primary); display: block; margin-bottom: 5px; }
-        #order-details { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; }
-        .req-chip { background: #f0edff; padding: 6px 12px; border-radius: 12px; color: var(--primary); border: 2px solid #dcd3ff; }
+        .order-card { background: white; padding: 12px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid var(--primary); width: 100%; box-sizing: border-box; }
+        #order-title { font-size: 22px; color: var(--primary); display: block; margin-bottom: 3px; }
+        #order-details { font-family: 'Quicksand', sans-serif; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 5px; }
+        .req-chip { background: #f0edff; padding: 4px 10px; border-radius: 10px; color: var(--primary); border: 1px solid #dcd3ff; }
 
         .play-area { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center; }
-        .board { width: 220px; min-height: 140px; background: var(--wood); border: 12px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px; padding: 10px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
+        .board { width: 200px; min-height: 130px; background: var(--wood); border: 10px solid var(--bark); border-radius: 45px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 3px; padding: 8px; box-shadow: inset 0 0 25px rgba(0,0,0,0.5); }
 
-        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 75px; }
-        #egg-timer { font-size: 45px; }
-        #timer-text { font-size: 18px; margin-top: 5px; color: #333; }
+        #egg-timer { font-size: 40px; }
+        #timer-text { font-size: 18px; color: #333; }
 
-        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; background: white; padding: 12px; border-radius: 25px; box-shadow: 0 8px 0 #ddd; box-sizing: border-box; }
-        .item { font-size: 40px; cursor: pointer; user-select: none; }
+        /* Pantry Expanded to 4 Rows height with scrolling */
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; background: white; padding: 12px; border-radius: 25px; box-shadow: 0 6px 0 #ddd; box-sizing: border-box; max-height: 220px; overflow-y: auto; border: 2px solid #eee; }
+        .item { font-size: 38px; cursor: pointer; user-select: none; display: flex; justify-content: center; align-items: center; }
         
-        .big-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 60px; font-size: 28px; box-shadow: 0 10px 0 #5a3ec7; width: 100%; cursor: pointer; margin-top: 15px; font-family: 'Fredoka One'; }
+        .big-btn { background: var(--primary); color: white; border: none; padding: 20px; border-radius: 60px; font-size: 24px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; margin-top: 10px; font-family: 'Fredoka One'; }
         
-        button#serve-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; font-size: 24px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; }
+        button#serve-btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 40px; font-size: 22px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
         
-        .money-text { color: var(--success); font-size: 26px; }
-        p.story-p { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; color: #444; line-height: 1.4; margin: 10px 0; }
+        .money-text { color: var(--success); font-size: 24px; }
+        p.story-p { font-family: 'Quicksand', sans-serif; font-size: 17px; font-weight: 700; color: #444; margin: 8px 0; }
     </style>
 </head>
 <body>
@@ -52,10 +49,10 @@
 
 <div id="game-container">
     <div class="header">
-        <div id="high-score-display">All-Time Best: $<span id="high-score-val">0.00</span></div>
-        <div class="top-bar">
-            <div style="font-size: 1.2rem; color: var(--primary);">THE RUSTIC BOARD</div>
-            <div id="lives-display" style="font-size: 24px;">❤️❤️❤️</div>
+        <div id="high-score-display">Record: $<span id="high-score-val">0.00</span></div>
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.1rem; color: var(--primary);">THE RUSTIC BOARD</div>
+            <div id="lives-display" style="font-size: 22px;">❤️❤️❤️</div>
         </div>
     </div>
 
@@ -69,7 +66,7 @@
 
     <div class="play-area">
         <div class="board" id="board"></div>
-        <div class="egg-timer-container">
+        <div class="egg-timer-container" style="text-align:center;">
             <div id="egg-timer">⏲️</div>
             <div id="timer-text">0:00</div>
         </div>
@@ -91,35 +88,38 @@
     const customers = [
         { name: "Old Man Jenkins", e: "👴🏻", why: "My grandkids are visiting and I want to show them I'm still the 'Cool Grandpa'." },
         { name: "Officer Miller", e: "👮‍♂️", why: "Double shift at the precinct. I need something better than donuts today." },
-        { name: "Artist Luna", e: "👩‍🎨", why: "I'm hosting an art gallery opening. The snacks must be as beautiful as the paintings!" },
+        { name: "Artist Luna", e: "👩‍🎨", why: "I'm hosting an gallery opening. The snacks must be as beautiful as the art!" },
         { name: "Coach Mike", e: "👟", why: "The team won the championship! We need a victory feast." },
-        { name: "Teacher Sarah", e: "👩‍🏫", why: "It's the last day of school. I need a treat to survive the grading pile." },
-        { name: "Gamer Toby", e: "🎧", why: "I'm doing a 24-hour charity livestream. Finger foods only!" },
-        { name: "Mayor Wilson", e: "🎩", why: "The city council meeting is going long. Keep us fed and happy." }
+        { name: "Gamer Toby", e: "🎧", why: "I'm doing a 24-hour charity livestream. Finger foods only!" }
     ];
 
-    const milestones = {
-        0: "Maya's Dream: I'm finally moving my business from my kitchen table to a real storefront. Let's make this work!",
-        10: "Growth: Word is spreading! We just got featured in the local paper. The orders are getting complex!",
-        20: "The Deli Upgrade: I've invested in a better fridge. Now we can offer even more specialty meats and cheeses!",
-        50: "The Empire: Halfway there! Chef Maya is now a local celebrity. People travel for miles for our boards."
-    };
+    const milestones = { 0: "I'm moving my business from my kitchen table to a real storefront. Let's make this work!", 50: "Chef Maya is now a local celebrity! People travel for miles for our boards." };
 
     const pantryItems = [
-        {e:'🧀', t:'cheese', v:2.5}, {e:'🥩', t:'meat', v:4.0}, {e:'🥓', t:'meat', v:3.0}, {e:'🍗', t:'meat', v:3.5}, {e:'🥚', t:'egg', v:1.5}, {e:'🥨', t:'cracker', v:1.0},
-        {e:'🥖', t:'cracker', v:1.5}, {e:'🥐', t:'cracker', v:2.0}, {e:'🍞', t:'cracker', v:1.0}, {e:'🍇', t:'fruit', v:2.0}, {e:'🍓', t:'fruit', v:2.5}, {e:'🫐', t:'fruit', v:3.0},
-        {e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🥜', t:'nut', v:2.0}, 
-        {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🥕', t:'veg', v:1.5}, {e:'🦐', t:'meat', v:5.0}
+        // Cheese & Dairy
+        {e:'🧀', t:'cheese', v:2.5}, {e:'🧈', t:'cheese', v:2.0}, {e:'🥚', t:'egg', v:1.5}, {e:'🍳', t:'egg', v:2.0},
+        // Meats
+        {e:'🥩', t:'meat', v:4.0}, {e:'🥓', t:'meat', v:3.0}, {e:'🍗', t:'meat', v:3.5}, {e:'🍖', t:'meat', v:3.5}, {e:'🦐', t:'meat', v:5.0}, {e:'🍣', t:'meat', v:5.5},
+        // Breads & Crackers
+        {e:'🥨', t:'cracker', v:1.0}, {e:'🥖', t:'cracker', v:1.5}, {e:'🥐', t:'cracker', v:2.0}, {e:'🍞', t:'cracker', v:1.0}, {e:'🥯', t:'cracker', v:1.5}, {e:'🧇', t:'cracker', v:2.0},
+        // Fruits
+        {e:'🍇', t:'fruit', v:2.0}, {e:'🍓', t:'fruit', v:2.5}, {e:'🫐', t:'fruit', v:3.0}, {e:' Pineapple', e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍑', t:'fruit', v:2.5}, {e:'🍏', t:'fruit', v:1.5}, {e:'🍋', t:'fruit', v:1.5},
+        // Sweets
+        {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🧁', t:'sweet', v:4.0}, {e:'🍬', t:'sweet', v:0.5}, {e:'🍯', t:'sweet', v:3.5},
+        // Veggies & Savory
+        {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🥦', t:'veg', v:1.5}, {e:'🥔', t:'veg', v:1.0},
+        // Nuts & Garnish
+        {e:'🥜', t:'nut', v:2.0}, {e:'🌰', t:'nut', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🍃', t:'garnish', v:1.0}
     ];
 
     const levels = [];
     const types = ['cheese', 'meat', 'cracker', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
 
     for(let i=1; i<=100; i++) {
-        let diff = Math.floor(i / 8) + 2; 
+        let diff = Math.floor(i / 7) + 3; // Starting complexity higher
         let r = {};
         let shuffled = [...types].sort(() => 0.5 - Math.random());
-        let numTypes = Math.min(diff, 7);
+        let numTypes = Math.min(diff, 8);
         let totalItems = 0;
         for(let j=0; j<numTypes; j++) {
             let t = shuffled[j];
@@ -128,21 +128,11 @@
             totalItems += count;
         }
 
-        // TIERED TIMER LOGIC
-        let timeLimit = 17;
-        if (totalItems <= 3) timeLimit = 7;
-        else if (totalItems <= 6) timeLimit = 12;
+        let timeLimit = 20; // Default Large
+        if (totalItems <= 3) timeLimit = 10;
+        else if (totalItems <= 6) timeLimit = 15;
 
-        let cust = customers[i % customers.length];
-        levels.push({ t: timeLimit, r: r, p: 15 + (i * 6), customer: cust });
-    }
-
-    function updateHighScore() {
-        if (bankAccount > highScore) {
-            highScore = bankAccount;
-            localStorage.setItem('rusticBoardHighScore', highScore);
-            document.getElementById('high-score-val').innerText = parseFloat(highScore).toFixed(2);
-        }
+        levels.push({ t: timeLimit, r: r, p: 20 + (i * 6), customer: customers[i % customers.length] });
     }
 
     function showStory(mode = "prologue", earnings = 0) {
@@ -151,28 +141,24 @@
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `<span class="chef-avatar">👩🏾‍🍳</span><h2>Chef Maya</h2><p class="story-p">${milestones[0]}</p><button class="big-btn" onclick="showStory('level')">START JOURNEY</button>`;
+            content.innerHTML = `<h2>Chef Maya</h2><p class="story-p">${milestones[0]}</p><button class="big-btn" onclick="showStory('level')">OPEN SHOP</button>`;
         } else if (lives <= 0) {
-            updateHighScore();
-            content.innerHTML = `<h2>Closed...</h2><p class="story-p">The shop needs a break. Final earnings: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">REOPEN</button>`;
+            content.innerHTML = `<h2>Final Shift</h2><p class="story-p">Earnings: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RETRY</button>`;
         } else if (mode === "success") {
-            updateHighScore();
-            let mileText = milestones[currentLevel] ? `<h2>Milestone!</h2><p class="story-p">${milestones[currentLevel]}</p>` : `<h2>Great Job!</h2>`;
-            content.innerHTML = `<span class="chef-avatar">👩🏾‍🍳</span>${mileText}<p class="story-p">You earned $${earnings.toFixed(2)}!</p><button class="big-btn" onclick="showStory('level')">NEXT CUSTOMER</button>`;
+            if (bankAccount > highScore) { highScore = bankAccount; localStorage.setItem('rusticBoardHighScore', highScore); document.getElementById('high-score-val').innerText = parseFloat(highScore).toFixed(2); }
+            content.innerHTML = `<h2>Success!</h2><p class="story-p">You earned $${earnings.toFixed(2)}!</p><button class="big-btn" onclick="showStory('level')">NEXT ORDER</button>`;
         } else if (currentLevel < levels.length) {
             const d = levels[currentLevel];
-            content.innerHTML = `<span class="customer-avatar">${d.customer.e}</span><h3>${d.customer.name}</h3><p class="story-p">"${d.customer.why}"</p><button class="big-btn" onclick="startLevel()">PREP BOARD</button>`;
+            content.innerHTML = `<span style="font-size:50px">${d.customer.e}</span><h3>${d.customer.name}</h3><p class="story-p">"${d.customer.why}"</p><button class="big-btn" onclick="startLevel()">PREP</button>`;
         }
     }
 
     function renderTray() {
         const tray = document.getElementById('tray'); tray.innerHTML = '';
         pantryItems.forEach(item => {
-            const d = document.createElement('div');
-            d.className = 'item'; d.innerHTML = item.e;
+            const d = document.createElement('div'); d.className = 'item'; d.innerHTML = item.e;
             d.onclick = () => {
-                const bItem = document.createElement('div');
-                bItem.className = 'item'; bItem.innerHTML = item.e;
+                const bItem = document.createElement('div'); bItem.className = 'item'; bItem.innerHTML = item.e;
                 bItem.dataset.type = item.t; bItem.dataset.val = item.v;
                 bItem.onclick = () => bItem.remove();
                 document.getElementById('board').appendChild(bItem);
@@ -196,24 +182,10 @@
 
     function startTimer() {
         clearInterval(timerInterval);
-        const txt = document.getElementById('timer-text');
-        const egg = document.getElementById('egg-timer');
         timerInterval = setInterval(() => {
             timeLeft--;
-            txt.innerText = (timeLeft / 100).toFixed(2) + "s";
-            if (timeLeft < 400) {
-                egg.style.transform = `rotate(${Math.sin(timeLeft) * 15}deg)`;
-                txt.style.color = 'var(--danger)';
-            } else {
-                egg.style.transform = 'rotate(0deg)';
-                txt.style.color = '#333';
-            }
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                lives--;
-                document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
-                showStory('level');
-            }
+            document.getElementById('timer-text').innerText = (timeLeft / 100).toFixed(2) + "s";
+            if (timeLeft <= 0) { clearInterval(timerInterval); lives--; document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3-lives); showStory('level'); }
         }, 10);
     }
 
@@ -221,20 +193,10 @@
         const d = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
         let counts = {}, val = 0;
-        items.forEach(i => {
-            counts[i.dataset.type] = (counts[i.dataset.type] || 0) + 1;
-            val += parseFloat(i.dataset.val || 0);
-        });
+        items.forEach(i => { counts[i.dataset.type] = (counts[i.dataset.type] || 0) + 1; val += parseFloat(i.dataset.val || 0); });
         let win = true;
         for (let k in d.r) { if ((counts[k] || 0) < d.r[k]) win = false; }
-        if (win) {
-            clearInterval(timerInterval);
-            let earned = d.p + (timeLeft/100) + (val * 0.2);
-            bankAccount += earned;
-            document.getElementById('score-display').innerText = bankAccount.toFixed(2);
-            currentLevel++;
-            showStory("success", earned);
-        }
+        if (win) { clearInterval(timerInterval); let earned = d.p + (timeLeft/100) + (val * 0.2); bankAccount += earned; document.getElementById('score-display').innerText = bankAccount.toFixed(2); currentLevel++; showStory("success", earned); }
     }
 
     function resetGame() { currentLevel = 0; bankAccount = 0.00; lives = 3; document.getElementById('score-display').innerText = "0.00"; document.getElementById('lives-display').innerText = "❤️".repeat(3); showStory('prologue'); }
