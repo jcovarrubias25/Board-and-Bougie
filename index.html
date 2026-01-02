@@ -3,196 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: Story Mode</title>
+    <title>The Rustic Board: Pro</title>
     <style>
         :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; --paper: #fffcf2; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        body { font-family: system-ui, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; }
         
-        #game-container { width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        /* Fixed Safe-Area Container */
+        #game-container { width: 100%; height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; margin-bottom: env(safe-area-inset-bottom); }
         
-        /* Modal Overlay for Stories */
-        #story-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .story-box { background: var(--paper); padding: 25px; border-radius: 15px; border-top: 10px solid var(--primary); max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .story-box h2 { margin-top: 0; color: #333; }
-        .story-box p { color: #555; line-height: 1.5; font-style: italic; margin: 20px 0; }
+        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .story-box { background: var(--paper); padding: 20px; border-radius: 20px; border-top: 10px solid var(--primary); width: 100%; max-width: 340px; text-align: center; }
         
         .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-        .lvl-badge { background: #000; color: #fff; padding: 4px 10px; border-radius: 12px; font-weight: 900; }
+        .stat-badge { background: #000; color: #fff; padding: 4px 10px; border-radius: 10px; font-weight: 900; font-size: 11px; }
+
+        .order-card { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; }
+        #order-details { font-size: 11px; color: #111; font-weight: 800; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 3px; }
+        .req-chip { background: #f0f0f0; padding: 2px 5px; border-radius: 5px; border: 1px solid #ddd; }
         
-        .order-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; }
-        #order-details { font-size: 12px; color: #111; font-weight: 800; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .req-chip { background: #f0f0f0; padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; }
+        .board { width: 250px; min-height: 120px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 2px; padding: 5px; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
+
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; width: 100%; background: rgba(255,255,255,0.4); padding: 8px; border-radius: 15px; }
+        .item { font-size: 40px; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .item:active { transform: scale(0.7); }
         
-        .board { width: 280px; min-height: 160px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 2px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
-        .tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 10px; background: rgba(255,255,255,0.3); border-radius: 20px; width: 100%; overflow-y: auto; max-height: 35vh; }
-        
-        .item { font-size: 60px; cursor: pointer; transition: transform 0.1s; }
-        .item:active { transform: scale(0.8); }
-        
-        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-weight: 900; font-size: 20px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
-        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #5a3ec7; }
-        
-        #timer-bar { width: 100%; height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 2px solid #000; margin: 5px 0; }
+        button#main-btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 45px; font-weight: 900; font-size: 20px; box-shadow: 0 5px 0 #5a3ec7; width: 100%; }
+        #timer-bar { width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; border: 1px solid #000; }
         #timer-fill { width: 100%; height: 100%; background: var(--success); }
+        
+        .leaderboard { text-align: left; max-height: 150px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: #f0f0f0; padding: 5px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
 <div id="story-overlay">
-    <div class="story-box" id="story-content">
-        </div>
+    <div class="story-box" id="story-content"></div>
 </div>
 
 <div id="game-container">
     <div class="header">
-        <div style="font-weight: 900; font-size: 1.4rem;">THE RUSTIC BOARD</div>
-        <div class="lvl-badge" id="lvl-display">LVL 1</div>
+        <div><b style="font-size:1.2rem">RUSTIC BOARD</b> <span class="stat-badge" id="lvl-display">LVL 1</span></div>
+        <div id="lives-display">❤️❤️❤️</div>
     </div>
+
     <div class="order-card">
-        <b id="order-title">Order Name</b>
+        <div style="display: flex; justify-content: space-between;"><b id="order-title">New Order</b> <span id="score-display" style="color:var(--primary); font-weight:900;">0</span></div>
         <div id="order-details"></div>
     </div>
+
     <div id="timer-bar"><div id="timer-fill"></div></div>
-    <div id="msg" style="font-weight: 900;"></div>
+    <div id="msg" style="height:14px; font-weight:900; font-size:12px"></div>
+
     <div class="board" id="board"></div>
     <div class="tray" id="tray"></div>
-    <button onclick="submitBoard()">SERVE CLIENT</button>
+
+    <button id="main-btn" onclick="submitBoard()">SERVE CLIENT</button>
 </div>
 
 <script>
     let currentLevel = 0;
-    let timerInterval;
-    let timeLeft;
+    let score = 0;
+    let lives = 3;
+    let timerInterval, timeLeft, maxTime;
 
     const pantry = [
-        {e:'🧀', t:'cheese'}, {e:'🧀', t:'cheese'}, {e:'🧀', t:'cheese'},
-        {e:'🥩', t:'meat'}, {e:'🍕', t:'meat'}, {e:'🥓', t:'meat'},
-        {e:'🥨', t:'cracker'}, {e:'🥖', t:'cracker'}, {e:'🥐', t:'cracker'},
-        {e:'🍇', t:'fruit'}, {e:'🍓', t:'fruit'}, {e:'🫐', t:'fruit'}, {e:'🍍', t:'fruit'},
-        {e:'🍫', t:'sweet'}, {e:'🍪', t:'sweet'}, {e:'🍩', t:'sweet'},
-        {e:'🥜', t:'nut'}, {e:'🌰', t:'nut'}, {e:'🫒', t:'olive'},
-        {e:'🥒', t:'olive'}, {e:'🌿', t:'garnish'}, {e:'🥚', t:'egg'}
+        {e:'🧀', t:'cheese', q:2}, {e:'🧀', t:'cheese', q:2}, {e:'🥩', t:'meat', q:3}, {e:'🥓', t:'meat', q:2}, {e:'🍗', t:'meat', q:3}, {e:'🍕', t:'meat', q:1},
+        {e:'🥨', t:'cracker', q:1}, {e:'🥖', t:'cracker', q:2}, {e:'🥐', t:'cracker', q:3}, {e:'🍞', t:'cracker', q:2}, {e:'🍇', t:'fruit', q:2}, {e:'🍓', t:'fruit', q:2},
+        {e:'🫐', t:'fruit', q:3}, {e:'🍍', t:'fruit', q:3}, {e:'🍒', t:'fruit', q:3}, {e:'🍫', t:'sweet', q:2}, {e:'🍪', t:'sweet', q:2}, {e:'🍩', t:'sweet', q:2},
+        {e:'🍬', t:'sweet', q:1}, {e:'🥜', t:'nut', q:2}, {e:'🌰', t:'nut', q:2}, {e:'🫒', t:'olive', q:3}, {e:'🥒', t:'olive', q:2}, {e:'🌿', t:'garnish', q:3},
+        {e:'🍃', t:'garnish', q:3}, {e:'🥕', t:'veg', q:2}, {e:'🍅', t:'veg', q:2}, {e:'🌽', t:'veg', q:2}, {e:'🌶️', t:'veg', q:2}, {e:'🥚', t:'egg', q:3}
     ];
 
     const levels = [
-        {
-            title: "First Day Jitters",
-            customer: "Mrs. Higgins (Your First Client)",
-            note: "Welcome to the neighborhood! I'm hosting a small bridge club. Keep it simple: just a little cheese and a cracker for each of us.",
-            time: 6,
-            req: { cheese: 1, cracker: 1 }
-        },
-        {
-            title: "The Busy Intern",
-            customer: "Steve (Tech Startup)",
-            note: "My boss is a genius but forgets to eat. Get me some meat, cheese, and a piece of fruit ASAP before he faints during the demo!",
-            time: 8,
-            req: { meat: 1, cheese: 1, fruit: 1 }
-        },
-        {
-            title: "Movie Night Meltdown",
-            customer: "The Henderson Kids",
-            note: "Mom said we could have a treat! We want lots of chocolate and some berries. Don't tell her about the extra sweets!",
-            time: 10,
-            req: { sweet: 2, fruit: 2 }
-        },
-        {
-            title: "The Sophisticate",
-            customer: "Julian (Food Critic)",
-            note: "I've heard rumors of your new venture. Impress me with a balanced salty board. Olives and nuts are mandatory.",
-            time: 12,
-            req: { olive: 2, nut: 1, cracker: 1 }
-        },
-        {
-            title: "The Anniversary Rush",
-            customer: "Nervous Nate",
-            note: "It's our 5th anniversary! I forgot the reservation! I need a fancy spread with meat, cheese, crackers, and garnish. Help me!",
-            time: 15,
-            req: { meat: 2, cheese: 2, cracker: 1, garnish: 1 }
-        }
+        { title: "The Start", customer: "The Neighbor", note: "Welcome! Just a simple snack to start.", time: 7, req: { cheese: 1, cracker: 1 } },
+        { title: "Gym Prep", customer: "Coach Mike", note: "I need protein and energy. Stat!", time: 8, req: { meat: 1, egg: 1 } },
+        { title: "Office Brunch", customer: "Pam", note: "The boss is hungry. 2 meats and a fruit.", time: 10, req: { meat: 2, fruit: 1 } },
+        { title: "Sweet Break", customer: "Kid", note: "Treat time! 2 sweets and 2 berries.", time: 12, req: { sweet: 2, fruit: 2 } },
+        { title: "Chef Test", customer: "The Critic", note: "Impression me. 2 olives, 2 cheeses, 1 garnish.", time: 15, req: { olive: 2, cheese: 2, garnish: 1 } }
     ];
+
+    function updateLives() {
+        document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    }
 
     function showStory() {
         const overlay = document.getElementById('story-overlay');
         const content = document.getElementById('story-content');
-        
-        if (currentLevel === 0) {
-            content.innerHTML = `
-                <h2>Welcome, Chef!</h2>
-                <p>You've finally opened 'The Rustic Board.' The bills are piling up, and you need clients. Make every order perfect to build your reputation!</p>
-                <button onclick="nextStep()">Start Your Career</button>
-            `;
+        if (lives <= 0) {
+            saveScore();
+            content.innerHTML = `<h2>Game Over</h2><p>You ran out of lives!</p>${getLeaderboardHTML()}<button onclick="resetGame()">Try Again</button>`;
         } else if (currentLevel < levels.length) {
             const data = levels[currentLevel];
-            content.innerHTML = `
-                <h3>New Request from ${data.customer}</h3>
-                <p>"${data.note}"</p>
-                <button onclick="startLevel()">Accept Order</button>
-            `;
+            content.innerHTML = `<h3>Level ${currentLevel+1}: ${data.customer}</h3><p>"${data.note}"</p><button onclick="startLevel()">Start Prep</button>`;
         } else {
-            showVictory();
+            saveScore();
+            content.innerHTML = `<h2>Champion Chef!</h2><p>Final Score: ${score}</p>${getLeaderboardHTML()}<button onclick="resetGame()">Play Again</button>`;
         }
         overlay.style.display = 'flex';
     }
 
-    function nextStep() {
-        showStory(); // Moves from intro to first level note
-        // Hack to bypass intro on first run
-        const data = levels[0];
-        document.getElementById('story-content').innerHTML = `
-            <h3>New Request from ${data.customer}</h3>
-            <p>"${data.note}"</p>
-            <button onclick="startLevel()">Accept Order</button>
-        `;
-    }
-
     function startLevel() {
         document.getElementById('story-overlay').style.display = 'none';
-        initBoard();
-    }
-
-    function initBoard() {
         const data = levels[currentLevel];
+        maxTime = data.time * 100;
+        timeLeft = maxTime;
         document.getElementById('lvl-display').innerText = "LVL " + (currentLevel + 1);
         document.getElementById('order-title').innerText = data.title;
-        
-        let details = "";
-        for (let k in data.req) details += `<span class="req-chip">${data.req[k]}x ${k.toUpperCase()}</span>`;
-        document.getElementById('order-details').innerHTML = details;
-        
-        const tray = document.getElementById('tray');
-        const board = document.getElementById('board');
-        tray.innerHTML = ''; board.innerHTML = '';
-        
-        const shuffled = [...pantry].sort(() => Math.random() - 0.5);
-        shuffled.forEach(item => {
-            const d = document.createElement('div');
-            d.className = 'item'; d.innerHTML = item.e;
-            d.onclick = () => {
-                if (d.parentElement.id === 'tray') board.appendChild(d);
-                else tray.appendChild(d);
-                if (navigator.vibrate) navigator.vibrate(10);
-            };
-            d.setAttribute('data-type', item.t);
-            tray.appendChild(d);
-        });
-        startTimer(data.time);
+        document.getElementById('board').innerHTML = '';
+        renderTray();
+        renderReqs(data.req);
+        startTimer();
     }
 
-    function startTimer(seconds) {
+    function renderTray() {
+        const tray = document.getElementById('tray');
+        tray.innerHTML = '';
+        pantry.forEach(item => {
+            const d = document.createElement('div');
+            d.className = 'item'; d.innerHTML = item.e;
+            d.onclick = () => { document.getElementById('board').appendChild(d); if(navigator.vibrate) navigator.vibrate(10); };
+            d.dataset.type = item.t; d.dataset.quality = item.q;
+            tray.appendChild(d);
+        });
+    }
+
+    function renderReqs(req) {
+        let details = "";
+        for (let k in req) details += `<span class="req-chip">${req[k]}x ${k.toUpperCase()}</span>`;
+        document.getElementById('order-details').innerHTML = details;
+    }
+
+    function startTimer() {
         clearInterval(timerInterval);
-        timeLeft = seconds * 100;
-        const maxTime = seconds * 100;
         const fill = document.getElementById('timer-fill');
         timerInterval = setInterval(() => {
             timeLeft--;
-            const pct = (timeLeft / maxTime) * 100;
-            fill.style.width = pct + '%';
-            if (pct < 30) fill.style.background = 'var(--danger)';
+            fill.style.width = (timeLeft / maxTime) * 100 + '%';
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert("CLIENT ANGRY: You were too slow! Try again.");
-                currentLevel = 0;
+                lives--; updateLives();
+                alert(lives > 0 ? "Customer left! Try that level again." : "Out of lives!");
                 showStory();
             }
         }, 10);
@@ -201,35 +151,54 @@
     function submitBoard() {
         const data = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
-        let counts = {};
-        items.forEach(i => { let t = i.getAttribute('data-type'); counts[t] = (counts[t] || 0) + 1; });
+        let counts = {}, totalQuality = 0, itemCount = 0;
         
+        items.forEach(i => {
+            let t = i.dataset.type;
+            counts[t] = (counts[t] || 0) + 1;
+            totalQuality += parseInt(i.dataset.quality);
+            itemCount++;
+        });
+
         let win = true;
         for (let k in data.req) { if ((counts[k] || 0) < data.req[k]) win = false; }
-        
+
         if (win) {
             clearInterval(timerInterval);
-            document.getElementById('msg').innerText = "✅ CLIENT SATISFIED!";
+            let timeBonus = Math.floor((timeLeft / maxTime) * 100);
+            let accuracy = (itemCount === Object.values(data.req).reduce((a, b) => a + b, 0)) ? 50 : 0;
+            let qualityBonus = totalQuality * 5;
+            let roundScore = timeBonus + accuracy + qualityBonus;
+            score += roundScore;
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('msg').innerText = `+${roundScore} PTS (Quality: ${qualityBonus})`;
             currentLevel++;
-            setTimeout(() => {
-                document.getElementById('msg').innerText = "";
-                showStory();
-            }, 800);
+            setTimeout(() => { document.getElementById('msg').innerText = ""; showStory(); }, 1000);
         } else {
-            document.getElementById('msg').innerText = "❌ THAT'S NOT WHAT I ORDERED!";
+            document.getElementById('msg').innerText = "❌ WRONG ITEMS!";
         }
     }
 
-    function showVictory() {
-        document.getElementById('story-overlay').style.display = 'flex';
-        document.getElementById('story-content').innerHTML = `
-            <h2>Entrepreneur of the Year!</h2>
-            <p>You've built 'The Rustic Board' into a local legend. Every client is raving about your speed and style.</p>
-            <button onclick="location.reload()">Start a New Franchise</button>
-        `;
+    function saveScore() {
+        let topScores = JSON.parse(localStorage.getItem('rusticScores') || "[]");
+        topScores.push({date: new Date().toLocaleDateString(), score: score});
+        topScores.sort((a,b) => b.score - a.score);
+        localStorage.setItem('rusticScores', JSON.stringify(topScores.slice(0, 10)));
     }
 
-    // Start the game story
+    function getLeaderboardHTML() {
+        let topScores = JSON.parse(localStorage.getItem('rusticScores') || "[]");
+        let list = topScores.map((s, i) => `<div>${i+1}. ${s.score} pts (${s.date})</div>`).join('');
+        return `<div class="leaderboard"><b>TOP 10 SCORES:</b><br>${list || 'No scores yet'}</div>`;
+    }
+
+    function resetGame() {
+        currentLevel = 0; score = 0; lives = 3;
+        document.getElementById('score-display').innerText = "0";
+        updateLives(); showStory();
+    }
+
+    updateLives();
     showStory();
 </script>
 </body>
