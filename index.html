@@ -1,116 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Charcuterie Challenge</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#7a5cfa">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
-<style>
-  body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #fdfaf5;
-    margin: 0;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    touch-action: manipulation;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .header { width: 100%; display: flex; justify-content: space-between; padding: 10px; box-sizing: border-box; }
-  .score-badge { background: #7a5cfa; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
-
-  .order-card {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-left: 8px solid #7a5cfa;
-    width: 90%;
-    margin-bottom: 10px;
-  }
-
-  .board {
-    width: 85%;
-    min-height: 180px;
-    background: #d2b48c;
-    border: 10px solid #bc9d70;
-    border-radius: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-  }
-
-  .tray {
-    background: rgba(255,255,255,0.7);
-    padding: 10px;
-    border-radius: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 95%;
-  }
-
-  .item {
-    font-size: 38px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .item:active { transform: scale(1.4); }
-
-  button {
-    background: #7a5cfa;
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 30px;
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 15px;
-    box-shadow: 0 4px 0 #5a3ec7;
-  }
-  button:active { transform: translateY(3px); box-shadow: none; }
-
-  #msg { font-weight: bold; margin-top: 10px; color: #5a3ec7; }
-</style>
-</head>
-<body>
-
-<div class="header">
-  <div style="font-size: 20px;">🧀 <b>Charcuterie</b></div>
-  <div class="score-badge">Level: <span id="level">1</span></div>
-</div>
-
-<div class="order-card" id="order-box">
-  <div id="order-title"><b>ORDER: The Basic Snack</b></div>
-  <div id="order-details" style="font-size: 14px; color: #555;">Loading...</div>
-</div>
-
-<div class="board" id="board"></div>
-
-<div class="tray" id="tray">
-  </div>
-
-<button onclick="submitBoard()">Serve Platter</button>
-<div id="msg"></div>
-
 <script>
   let currentLevel = 1;
+  
+  // 1. ALL ingredients available in the game
   const ingredients = [
     { emoji: '🧀', type: 'cheese' }, { emoji: '🧀', type: 'cheese' },
     { emoji: '🍇', type: 'fruit' }, { emoji: '🍓', type: 'fruit' },
@@ -126,39 +17,65 @@
   ];
 
   function setupLevel() {
+    // Determine level (loop back to last level if they go beyond level 3)
     const levelData = levels[Math.min(currentLevel - 1, levels.length - 1)];
+    
     document.getElementById('order-title').innerHTML = `<b>ORDER: ${levelData.title}</b>`;
     document.getElementById('level').innerText = currentLevel;
     
-    let reqText = "";
-    for (let key in levelData.req) {
-      reqText += `• ${levelData.req[key]} ${key} `;
-    }
-    document.getElementById('order-details').innerText = reqText;
-
-    // Build Tray
+    // Clear the board and tray for the new level
     const tray = document.getElementById('tray');
     const board = document.getElementById('board');
     tray.innerHTML = '';
     board.innerHTML = '';
     
+    // 2. IMPORTANT: This loop now correctly places ALL ingredients into the tray
     ingredients.forEach(item => {
       const div = document.createElement('div');
       div.className = 'item';
       div.innerHTML = item.emoji;
       div.dataset.type = item.type;
+      
+      // Tap to move logic
       div.onclick = () => {
-        if (div.parentElement.id === 'tray') board.appendChild(div);
-        else tray.appendChild(div);
+        if (div.parentElement.id === 'tray') {
+          board.appendChild(div);
+          playTapSound(0.1); // Mini haptic-style sound
+        } else {
+          tray.appendChild(div);
+        }
       };
       tray.appendChild(div);
     });
+
+    // Generate the requirement text
+    let reqText = "";
+    for (let key in levelData.req) {
+      reqText += `• ${levelData.req[key]} ${key.toUpperCase()} `;
+    }
+    document.getElementById('order-details').innerText = reqText;
+  }
+
+  // A simple "Beep" sound using the browser's synthesizer (No files needed!)
+  function playTapSound(vol) {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
   }
 
   function submitBoard() {
     const levelData = levels[Math.min(currentLevel - 1, levels.length - 1)];
     const onBoard = document.querySelectorAll('#board .item');
     let counts = {};
+    
     onBoard.forEach(item => {
       counts[item.dataset.type] = (counts[item.dataset.type] || 0) + 1;
     });
@@ -171,6 +88,7 @@
     if (pass) {
       document.getElementById('msg').innerText = "✅ Perfect! Next Level...";
       currentLevel++;
+      playTapSound(0.5); // Louder sound for success
       setTimeout(() => {
         document.getElementById('msg').innerText = "";
         setupLevel();
@@ -180,12 +98,6 @@
     }
   }
 
+  // Initialize the first level
   setupLevel();
-
-  // Register Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
 </script>
-</body>
-</html>
