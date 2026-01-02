@@ -26,7 +26,7 @@
         .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; }
         .story-box h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
         .story-box p { font-family: 'Quicksand', sans-serif; font-size: 19px; font-weight: 700; line-height: 1.4; color: #444; }
-        .cust-quote { font-style: italic; color: #666; margin-bottom: 15px; display: block; border-left: 4px solid var(--primary); padding-left: 10px; }
+        .cust-quote { font-style: italic; color: #666; margin-bottom: 15px; display: block; border-left: 4px solid var(--primary); padding-left: 10px; text-align: left; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #eee; font-size: 14px; }
 
@@ -156,31 +156,42 @@
     }
 
     let currentLevel = 0, bankAccount = 0, highScore = localStorage.getItem('rusticBoardHighScore') || 0, lives = 3, timerInterval, timeLeft;
-    const chefMayaTag = '<span style="font-size:70px">👩🏾‍🍳</span><br><span style="color:var(--primary); font-size: 24px;">Chef Maya</span>';
+    const chefMayaTag = '<span style="font-size:80px">👩🏾‍🍳</span><br><span style="color:var(--primary); font-size: 24px;">Chef Maya</span>';
 
-    const customerQuotes = [
-        "The hiker: 'Exactly what I needed after 10 miles. So fresh!'",
-        "The businessman: 'My clients were so impressed. You saved the deal!'",
-        "The young couple: 'The sunset picnic was perfect. This board made it.'",
-        "The neighbor: 'What a warm welcome to the street. Thank you!'",
-        "The grandma: 'My grandson's face lit up! You're an artist, Maya.'",
-        "The student: 'Passed my exam! That snack board kept me going.'",
-        "The blogger: 'This is definitely going on my front page. Stunning!'"
+    const uniqueCustomerStories = [
+        ["The Hiker", "I've been on the trail since dawn. I need something fresh!", "That hit the spot! I'm ready for the next 5 miles."],
+        ["The Professor", "I have a stack of midterms to grade. Brain food, please!", "Perfectly balanced. My students might actually get A's now."],
+        ["The Local Artist", "I'm looking for a board with a specific color palette.", "Magnificent! This belongs in a gallery, but I'll eat it instead."],
+        ["The Pilot", "Quick snack before my flight to Tokyo!", "First class quality! I'll tell the crew about you."],
+        ["The Tired Dad", "The kids are finally asleep. It's 'me time'.", "Peace, quiet, and a perfect board. Thank you, Maya."],
+        ["The Yoga Teacher", "Something light and mindful after my morning class.", "My chakras feel aligned. Truly nourishing."],
+        ["The Tech CEO", "I need a high-protein board for a board meeting.", "Efficient and delicious. Your shop has a great ROI."],
+        ["The Florist", "I want a board that looks like a spring garden.", "So vibrant! You have a real eye for arrangement."],
+        ["The Musician", "I have a gig in an hour and I'm starving!", "Rock and roll! That fueled me up for my solo."],
+        ["The Grandma", "A treat for my grand-babies' visit today.", "The little ones loved it! You're a sweetheart, Maya."],
+        ["The Detective", "Case is closed. I'm celebrating with a solo feast.", "The best reward a detective could ask for."],
+        ["The Photographer", "I need something photogenic for my portfolio.", "No filter needed. This looks incredible on camera."],
+        ["The Nurse", "Just finished a night shift. I need comfort food.", "You made my long night worth it. So delicious."],
+        ["The Poet", "A board that inspires a verse or two.", "A sonnet on wood. Every bite was a metaphor for joy."],
+        ["The Firefighter", "The station is hungry! Make it a good one.", "The guys are fighting over the last olive. Huge hit!"],
+        ["The Gardener", "Matches the colors of my prize-winning roses!", "Fresh as a morning dew. Best board in the county."],
+        ["The Book Club", "We're discussing a mystery, we need snacks!", "The mystery is how you make this so tasty!"],
+        ["The Architect", "I appreciate the structural integrity of this board.", "Perfectly designed. Not a single ingredient out of place."],
+        ["The Surfer", "Post-surf hunger is no joke. I need everything!", "Totally tubular. That was a wave of flavor."],
+        ["The Chef", "I'm off duty and I want someone else to cook!", "I'm impressed. Your pairings are world-class."],
+        ["The New Neighbor", "Just moved in and my kitchen is still in boxes.", "What a welcome! I'm glad I moved to this street."],
+        ["The Librarian", "I need a quiet snack for my afternoon break.", "Shhh... don't tell anyone, but I didn't want to share."],
+        ["The Fashionista", "This board must match my outfit for the party.", "Trés chic! Everyone asked where I got it."],
+        ["The Coach", "Fueling up the team for the championship game.", "We won! I'm crediting your board for the energy boost."],
+        ["The Traveler", "I've tasted boards in Italy, show me what you've got.", "Honestly? This rivals the best of Tuscany."]
     ];
 
     const milestones = {
         0: "I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!",
-        1: "The storefront looks great! Every board brings us closer to that neon sign.",
-        5: "We're getting busy! I might need to order more fancy honey jars soon.",
         10: "We just got featured in the local paper. The 'Maya Special' is a hit!",
-        20: "I've finally saved enough for a top-of-the-line walk-in fridge!"
+        20: "I've finally saved enough for a top-of-the-line walk-in fridge!",
+        50: "People are flying in just to try our boards. Maya, we made it!"
     };
-
-    const fillerStories = [
-        "That cheese pairing was genius!", "We're becoming the talk of the neighborhood!",
-        "Maya: 'I love seeing people smile when they pick up their orders.'",
-        "The shop smells amazing today, doesn't it?"
-    ];
 
     const pantryItems = [
         {e:'🧀', t:'cheese'}, {e:'🧈', t:'cheese'}, {e:'🥚', t:'egg'}, {e:'🥩', t:'meat'}, {e:'🥓', t:'meat'}, {e:'🍗', t:'meat'}, {e:'🍖', t:'meat'},
@@ -192,9 +203,9 @@
 
     const levels = [];
     const types = ['cheese', 'meat', 'bread', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
-    for(let i=1; i<=100; i++) {
+    for(let i=1; i<=200; i++) {
         let diff = Math.min(Math.floor(i / 10) + 2, 5);
-        let time = 18; if(i <= 5) time = 7; else if(i <= 10) time = 12;
+        let time = 20; if(i <= 5) time = 8; else if(i <= 10) time = 13;
         let r = {}; let shuffled = [...types].sort(() => 0.5 - Math.random());
         for(let j=0; j<diff; j++) { r[shuffled[j]] = Math.floor(Math.random() * 2) + 1; }
         levels.push({ t: time, r: r, p: 20 + (i * 5) });
@@ -210,9 +221,9 @@
         } else if (lives <= 0) {
             content.innerHTML = `<h2>Closed</h2><p>Maya: 'We had a good run today!'<br>Final: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RESTART</button>`;
         } else if (mode === "success") {
-            let custQuote = customerQuotes[Math.floor(Math.random() * customerQuotes.length)];
-            let mayaStory = milestones[currentLevel] || fillerStories[Math.floor(Math.random() * fillerStories.length)];
-            content.innerHTML = `${chefMayaTag}<div class="cust-quote">"${custQuote}"</div><p>${mayaStory}</p><p style="color:var(--success)">Earned: +$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT ORDER</button>`;
+            const storySet = uniqueCustomerStories[currentLevel % uniqueCustomerStories.length];
+            const mayaUpdate = milestones[currentLevel] || "Maya: 'The shop is buzzing today, keep it up!'";
+            content.innerHTML = `${chefMayaTag}<div class="cust-quote"><b>${storySet[0]}:</b> "${storySet[2]}"</div><p>${mayaUpdate}</p><p style="color:var(--success)">Earned: +$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT ORDER</button>`;
         } else if (mode === "fail") {
             content.innerHTML = `${chefMayaTag}<h2>Order Missed</h2><p>The customer couldn't wait any longer. Let's try to be a bit quicker!</p><button class="big-btn" onclick="showStory('level')">CONTINUE</button>`;
         } else {
@@ -263,7 +274,13 @@
         let error = null;
         for (let k in d.r) { if ((counts[k] || 0) < d.r[k]) { error = `Need more ${k.toUpperCase()}!`; break; } if ((counts[k] || 0) > d.r[k]) { error = `Too much ${k.toUpperCase()}!`; break; } }
         if (!error) { for (let k in counts) { if (!d.r[k]) { error = `No ${k.toUpperCase()}!`; break; } } }
-        if (!error) { clearInterval(timerInterval); playSound('ding'); let earned = d.p + (timeLeft/100); bankAccount += earned; document.getElementById('score-display').innerText = bankAccount.toFixed(2); currentLevel++; showStory("success", earned); } 
+        if (!error) { 
+            clearInterval(timerInterval); playSound('ding'); 
+            let earned = d.p + (timeLeft/100); bankAccount += earned; 
+            if (bankAccount > highScore) { highScore = bankAccount; localStorage.setItem('rusticBoardHighScore', highScore); document.getElementById('high-score-val').innerText = bankAccount.toFixed(2); }
+            document.getElementById('score-display').innerText = bankAccount.toFixed(2); 
+            currentLevel++; showStory("success", earned); 
+        } 
         else { playSound('hint'); const btn = document.getElementById('serve-btn'); btn.style.background = 'var(--danger)'; btn.innerText = error; setTimeout(() => { btn.innerText = "SERVE ✨"; btn.style.background = 'var(--primary)'; }, 1000); }
     }
 
