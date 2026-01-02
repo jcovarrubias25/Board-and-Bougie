@@ -3,41 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Rustic Board: 35 Level Career</title>
+    <title>The Rustic Board: 85 Levels</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap');
         
-        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; --paper: #fffcf2; }
+        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ecc71; --paper: #fffcf2; --accent: #ff9f43; }
         
-        body { font-family: 'Quicksand', sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
-        h1, h2, h3, b, button, .money-text { font-family: 'Fredoka One', cursive; letter-spacing: 0.5px; }
+        body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
+        
+        #game-container { width: 100%; height: 94vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        
+        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .story-box { background: var(--paper); padding: 30px; border-radius: 30px; border: 6px solid var(--primary); width: 100%; max-width: 380px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .chef-avatar { font-size: 100px; margin-bottom: 10px; display: block; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
+        .chef-tag { color: var(--primary); font-size: 18px; text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 2px; }
 
-        #game-container { width: 100%; height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+        #lives-display { font-size: 26px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
         
-        #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 20px; border-radius: 25px; border: 4px solid var(--primary); width: 100%; max-width: 360px; text-align: center; }
+        .order-card { background: white; padding: 15px; border-radius: 22px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 4px solid var(--primary); width: 100%; box-sizing: border-box; }
+        #order-title { font-size: 22px; color: #333; display: block; margin-bottom: 5px; }
+        #order-details { font-family: 'Quicksand', sans-serif; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; }
+        .req-chip { background: #f0edff; padding: 5px 10px; border-radius: 12px; color: var(--primary); border: 2px solid #dcd3ff; }
+
+        .play-area { display: flex; align-items: center; gap: 20px; width: 100%; justify-content: center; }
+        .board { width: 250px; min-height: 160px; background: var(--wood); border: 10px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 6px; padding: 15px; box-shadow: inset 0 0 30px rgba(0,0,0,0.4); }
+
+        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 75px; }
+        #egg-timer { font-size: 55px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.2)); }
+        #timer-text { font-size: 18px; margin-top: 8px; color: #333; }
+
+        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 8px 0 #ddd; box-sizing: border-box; border: 2px solid #eee; }
+        .item { font-size: 48px; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .item:active { transform: scale(1.3); }
         
-        .chef-avatar { font-size: 80px; margin-bottom: 5px; display: block; }
-        .chef-tag { color: var(--primary); font-size: 14px; text-transform: uppercase; margin-bottom: 5px; display: block; }
-
-        .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        button#serve-btn { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 50px; font-size: 26px; box-shadow: 0 8px 0 #5a3ec7; width: 100%; cursor: pointer; transition: 0.1s; }
+        button#serve-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #5a3ec7; }
         
-        .order-card { background: white; padding: 12px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; box-sizing: border-box; }
-        #order-details { font-size: 13px; color: #111; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .req-chip { background: #f0edff; padding: 3px 8px; border-radius: 10px; color: var(--primary); border: 1px solid #dcd3ff; font-weight: 700; }
-
-        .play-area { display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center; }
-        .board { width: 240px; min-height: 150px; background: var(--wood); border: 8px solid var(--bark); border-radius: 45px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
-
-        .egg-timer-container { display: flex; flex-direction: column; align-items: center; width: 65px; }
-        #egg-timer { font-size: 45px; }
-        #timer-text { font-weight: 900; font-size: 14px; margin-top: 5px; font-variant-numeric: tabular-nums; }
-
-        .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; background: white; padding: 12px; border-radius: 20px; box-shadow: 0 4px 0 #ddd; box-sizing: border-box; }
-        .item { font-size: 42px; cursor: pointer; user-select: none; display: flex; justify-content: center; align-items: center; }
-        
-        button#serve-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-size: 22px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
-        .money-text { color: #2ecc71; font-size: 20px; }
+        .money-text { color: var(--success); font-size: 26px; text-shadow: 1px 1px 0px #fff; }
+        h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
+        p { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; color: #444; }
     </style>
 </head>
 <body>
@@ -46,13 +52,13 @@
 
 <div id="game-container">
     <div class="header">
-        <div style="font-size: 1.2rem; color: var(--primary);">RUSTIC BOARD</div>
+        <div style="font-size: 1.6rem; color: var(--primary);">RUSTIC BOARD</div>
         <div id="lives-display">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b id="order-title">Level <span id="level-num">1</span>/35</b>
+            <b id="order-title">Order <span id="level-num">1</span>/85</b>
             <span class="money-text">$<span id="score-display">0.00</span></span>
         </div>
         <div id="order-details"></div>
@@ -67,7 +73,7 @@
     </div>
 
     <div class="tray" id="tray"></div>
-    <button id="serve-btn" onclick="submitBoard()">SERVE CLIENT ✨</button>
+    <button id="serve-btn" onclick="submitBoard()">SERVE ✨</button>
 </div>
 
 <script>
@@ -82,47 +88,30 @@
         {e:'🥖', t:'cracker', v:1.5}, {e:'🥐', t:'cracker', v:2.0}, {e:'🍞', t:'cracker', v:1.0}, {e:'🍇', t:'fruit', v:2.0}, {e:'🍓', t:'fruit', v:2.5}, {e:'🫐', t:'fruit', v:3.0},
         {e:'🍍', t:'fruit', v:3.5}, {e:'🍒', t:'fruit', v:3.0}, {e:'🍫', t:'sweet', v:2.5}, {e:'🍪', t:'sweet', v:1.5}, {e:'🍩', t:'sweet', v:2.0}, {e:'🍬', t:'sweet', v:0.5},
         {e:'🥜', t:'nut', v:2.0}, {e:'🌰', t:'nut', v:2.0}, {e:'🫒', t:'olive', v:3.0}, {e:'🥒', t:'olive', v:2.0}, {e:'🌿', t:'garnish', v:1.0}, {e:'🍃', t:'garnish', v:1.0},
-        {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🥯', t:'cracker', v:2.0}, {e:'🍯', t:'sweet', v:3.0}
+        {e:'🥕', t:'veg', v:1.5}, {e:'🍅', t:'veg', v:1.5}, {e:'🌽', t:'veg', v:1.5}, {e:'🌶️', t:'veg', v:1.5}, {e:'🍯', t:'sweet', v:3.5}, {e:'🦐', t:'meat', v:5.0}
     ];
 
-    // GENERATING 35 LEVELS
-    const levels = [
-        { c: "Neighbor", n: "Welcome! 1 cheese, 1 cracker.", t: 8, r: { cheese: 1, cracker: 1 }, p: 10 },
-        { c: "Student", n: "Study fuel! 2 fruit, 1 sweet.", t: 10, r: { fruit: 2, sweet: 1 }, p: 15 },
-        { c: "Coach", n: "Protein! 1 egg, 1 meat.", t: 7, r: { egg: 1, meat: 1 }, p: 12 },
-        { c: "Office", n: "Meeting! 3 meat, 2 cracker.", t: 12, r: { meat: 3, cracker: 2 }, p: 30 },
-        { c: "The Critic", n: "Impress me: 2 olives, 2 cheese, 1 garnish.", t: 15, r: { olive: 2, cheese: 2, garnish: 1 }, p: 45 },
-        { c: "Influencer", n: "Pretty! 3 fruit, 1 garnish.", t: 10, r: { fruit: 3, garnish: 1 }, p: 25 },
-        { c: "Grandma", n: "Garden club: 4 veg.", t: 12, r: { veg: 4 }, p: 20 },
-        { c: "Hiker", n: "Energy! 2 nut, 1 meat, 2 cracker.", t: 11, r: { nut: 2, meat: 1, cracker: 2 }, p: 28 },
-        { c: "Date Night", n: "Romantic: 2 sweet, 2 fruit, 1 cheese.", t: 13, r: { sweet: 2, fruit: 2, cheese: 1 }, p: 35 },
-        { c: "The Mayor", n: "Classy: 2 meat, 2 olive, 2 cheese.", t: 14, r: { meat: 2, olive: 2, cheese: 2 }, p: 50 },
-        { c: "Artist", n: "Colorful: 4 fruit, 1 garnish.", t: 12, r: { fruit: 4, garnish: 1 }, p: 22 },
-        { c: "Biker", n: "Salts! 2 nut, 2 olive, 1 meat.", t: 10, r: { nut: 2, olive: 2, meat: 1 }, p: 30 },
-        { c: "Doctor", n: "Brain food: 1 nut, 1 fruit, 1 egg.", t: 8, r: { nut: 1, fruit: 1, egg: 1 }, p: 18 },
-        { c: "Baker", n: "Sweets! 3 sweet, 2 cracker.", t: 12, r: { sweet: 3, cracker: 2 }, p: 25 },
-        { c: "VIP Gala", n: "Gala: 2 meat, 2 cheese, 2 olive, 2 garnish, 2 sweet.", t: 18, r: { meat: 2, cheese: 2, olive: 2, garnish: 2, sweet: 2 }, p: 100 },
-        { c: "Kid's Party", n: "Bites! 3 cracker, 3 fruit.", t: 14, r: { cracker: 3, fruit: 3 }, p: 20 },
-        { c: "Gym Rat", n: "Gains! 3 egg, 2 meat.", t: 10, r: { egg: 3, meat: 2 }, p: 35 },
-        { c: "Teacher", n: "Recess: 2 nut, 2 fruit.", t: 9, r: { nut: 2, fruit: 2 }, p: 15 },
-        { c: "Farmer", n: "Fresh: 3 veg, 2 egg.", t: 11, r: { veg: 3, egg: 2 }, p: 25 },
-        { c: "Lawyer", n: "Long night: 2 meat, 2 cheese, 2 cracker.", t: 13, r: { meat: 2, cheese: 2, cracker: 2 }, p: 40 },
-        { c: "Pilot", n: "Takeoff! 1 meat, 1 cheese, 1 nut.", t: 7, r: { meat: 1, cheese: 1, nut: 1 }, p: 20 },
-        { c: "Florist", n: "Petals: 3 garnish, 2 fruit.", t: 10, r: { garnish: 3, fruit: 2 }, p: 22 },
-        { c: "Gamer", n: "Snacks! 3 sweet, 3 nut.", t: 12, r: { sweet: 3, nut: 3 }, p: 28 },
-        { c: "CEO", n: "Boardroom: 4 cheese, 4 cracker.", t: 15, r: { cheese: 4, cracker: 4 }, p: 55 },
-        { c: "The Queen", n: "Royalty: 3 meat, 3 cheese, 3 garnish.", t: 20, r: { meat: 3, cheese: 3, garnish: 3 }, p: 120 },
-        { c: "Yoga Pro", n: "Zen: 3 veg, 3 fruit.", t: 15, r: { veg: 3, fruit: 3 }, p: 30 },
-        { c: "Mechanic", n: "Hefty! 4 meat, 2 egg.", t: 12, r: { meat: 4, egg: 2 }, p: 45 },
-        { c: "Writer", n: "Inspiration: 2 sweet, 2 olive, 2 cheese.", t: 12, r: { sweet: 2, olive: 2, cheese: 2 }, p: 35 },
-        { c: "Musician", n: "Gig fuel: 2 cracker, 2 fruit, 2 nut.", t: 12, r: { cracker: 2, fruit: 2, nut: 2 }, p: 30 },
-        { c: "Gold Medalist", n: "Power: 4 egg, 4 meat.", t: 15, r: { egg: 4, meat: 4 }, p: 80 },
-        { c: "Detective", n: "Clues: 2 olive, 2 nut, 1 meat.", t: 10, r: { olive: 2, nut: 2, meat: 1 }, p: 25 },
-        { c: "Sailor", n: "Salty: 4 olive, 2 cracker.", t: 12, r: { olive: 4, cracker: 2 }, p: 35 },
-        { c: "Librarian", n: "Quiet: 1 sweet, 1 cheese, 1 fruit.", t: 9, r: { sweet: 1, cheese: 1, fruit: 1 }, p: 15 },
-        { c: "Construction", n: "Break time! 5 meat, 5 cracker.", t: 20, r: { meat: 5, cracker: 5 }, p: 70 },
-        { c: "The Legend", n: "Final Challenge: 3 of everything meat, cheese, olive, fruit!", t: 30, r: { meat: 3, cheese: 3, olive: 3, fruit: 3 }, p: 250 }
-    ];
+    // Build 85 Levels procedurally with increasing complexity
+    const clients = ["Neighbor", "Student", "Coach", "Nurse", "Pilot", "Artist", "Mayor", "Critic", "VIP", "Influencer", "Grandma", "Chef", "Farmer", "Gamer", "CEO", "Queen", "Legend"];
+    const levels = [];
+    for(let i=1; i<=85; i++) {
+        let diff = Math.floor(i / 10) + 1;
+        let cName = clients[i % clients.length];
+        let r = {};
+        let types = ['cheese', 'meat', 'cracker', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
+        let numTypes = Math.min(diff + 1, 5);
+        for(let j=0; j<numTypes; j++) {
+            let t = types[j % types.length];
+            r[t] = Math.floor(Math.random() * diff) + 1;
+        }
+        levels.push({
+            c: cName,
+            n: `Level ${i}: Can you handle this board?`,
+            t: Math.max(25 - diff, 10),
+            r: r,
+            p: 10 + (i * 5)
+        });
+    }
 
     function showStory(mode = "prologue", earnings = 0) {
         const overlay = document.getElementById('story-overlay');
@@ -130,16 +119,16 @@
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `${chefMaya}<h2>35 Steps to Success!</h2><p>Maya's Rustic Board is officially open. Let's conquer all 35 clients!</p><button onclick="showStory('level')">Let's Go!</button>`;
+            content.innerHTML = `${chefMaya}<h2>85 Order Challenge!</h2><p>Maya's Boutique is booming! Let's serve 85 clients and make a fortune!</p><button onclick="showStory('level')">Open Shop!</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `${chefMaya}<h2>Kitchen Closed</h2><p>We'll get 'em next time!</p><button onclick="resetGame()">Restart Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>Kitchen Heat!</h2><p>We need a break. Let's start the shift over.</p><button onclick="resetGame()">Try Again</button>`;
         } else if (mode === "success") {
-            content.innerHTML = `${chefMaya}<h2>Order Complete!</h2><p>You earned <b>$${earnings.toFixed(2)}</b>!</p><button onclick="showStory('level')">Next Order ➡️</button>`;
+            content.innerHTML = `${chefMaya}<h2>Cha-Ching!</h2><p>Earned: <span class="money-text">$${earnings.toFixed(2)}</span></p><button onclick="showStory('level')">Next Order ➡️</button>`;
         } else if (currentLevel < levels.length) {
             const data = levels[currentLevel];
-            content.innerHTML = `${chefMaya}<h3>Client ${currentLevel+1}: ${data.c}</h3><p>"${data.n}"</p><button onclick="startLevel()">Prep Board</button>`;
+            content.innerHTML = `${chefMaya}<h3>Order ${currentLevel+1}: ${data.c}</h3><p>"I need a fresh board immediately!"</p><button onclick="startLevel()">Start Prep</button>`;
         } else {
-            content.innerHTML = `${chefMaya}<h2>A Culinary Legend!</h2><p>Shift over! Total: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Game</button>`;
+            content.innerHTML = `${chefMaya}<h2>Empire Built!</h2><p>Final Earnings: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Career</button>`;
         }
     }
 
@@ -154,7 +143,7 @@
                 bItem.dataset.type = item.t; bItem.dataset.val = item.v;
                 bItem.onclick = () => bItem.remove();
                 document.getElementById('board').appendChild(bItem);
-                if(navigator.vibrate) navigator.vibrate(5);
+                if(navigator.vibrate) navigator.vibrate(10);
             };
             tray.appendChild(d);
         });
@@ -180,12 +169,12 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             timerText.innerText = (timeLeft / 100).toFixed(2) + "s";
-            if (timeLeft < 300) {
-                eggIcon.style.transform = `rotate(${Math.sin(timeLeft) * 15}deg)`;
+            if (timeLeft < 400) {
+                eggIcon.style.transform = `rotate(${Math.sin(timeLeft) * 20}deg)`;
                 timerText.style.color = 'var(--danger)';
             } else {
                 eggIcon.style.transform = 'rotate(0deg)';
-                timerText.style.color = '#000';
+                timerText.style.color = '#333';
             }
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -209,7 +198,7 @@
         for (let k in data.r) { if ((counts[k] || 0) < data.r[k]) win = false; }
         if (win) {
             clearInterval(timerInterval);
-            let earned = data.p + (timeLeft/100)*0.50 + (boardValue * 0.1);
+            let earned = data.p + (timeLeft/100) + (boardValue * 0.2);
             bankAccount += earned;
             document.getElementById('score-display').innerText = bankAccount.toFixed(2);
             currentLevel++;
