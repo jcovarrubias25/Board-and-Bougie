@@ -23,14 +23,15 @@
         }
         
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; box-shadow: 0 20px 0 rgba(0,0,0,0.2); }
+        .story-box { background: var(--paper); padding: 35px; border-radius: 45px; border: 10px solid var(--primary); width: 100%; text-align: center; }
         .story-box h2 { font-size: 32px; color: var(--primary); margin: 10px 0; }
         .story-box p { font-family: 'Quicksand', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.4; color: #444; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #eee; font-size: 14px; }
 
         .order-card { background: white; padding: 10px; border-radius: 18px; border: 4px solid var(--primary); }
-        #order-details { font-family: 'Quicksand', sans-serif; font-size: 15px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+        #customer-story { font-family: 'Quicksand', sans-serif; font-size: 13px; font-style: italic; color: #666; margin-bottom: 5px; line-height: 1.2; }
+        #order-details { font-family: 'Quicksand', sans-serif; font-size: 15px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px; }
         .req-chip { background: #f0edff; padding: 3px 8px; border-radius: 8px; color: var(--primary); border: 1px solid #dcd3ff; }
 
         .play-area { 
@@ -100,7 +101,8 @@
     </div>
 
     <div class="order-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div id="customer-story"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
             <span style="color:var(--primary); font-size: 20px;">Board #<span id="level-num">1</span></span>
             <span class="money-text">$<span id="score-display">0.00</span></span>
         </div>
@@ -157,23 +159,27 @@
     let currentLevel = 0, bankAccount = 0, highScore = localStorage.getItem('rusticBoardHighScore') || 0, lives = 3, timerInterval, timeLeft;
     const chefMayaTag = '<span style="font-size:80px">👩🏾‍🍳</span><br><span style="color:var(--primary); font-size: 24px;">Chef Maya</span>';
 
+    const customerStories = [
+        "A young couple: 'We're heading to the park for a sunset picnic!'",
+        "A businessman: 'I need an impressive board for a client meeting, fast!'",
+        "A grandma: 'It's my grandson's birthday, he loves colorful snacks.'",
+        "A student: 'I'm pullin' an all-nighter and need some brain food.'",
+        "A hiker: 'Just finished the trail, I am starving for something fresh!'",
+        "A neighbor: 'Welcoming a new family to the block with a board.'",
+        "An artist: 'I need a board that looks as good as it tastes for my gallery opening!'"
+    ];
+
     const milestones = {
-        0: "Welcome! I'm Maya. I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!",
-        1: "Perfect start! Every board we sell brings us closer to getting that neon sign for the window.",
-        2: "The smell of fresh bread is starting to fill the shop. People are peering in the windows!",
-        3: "A local food blogger just walked in. No pressure, right?",
-        4: "Whew! They loved it. My phone won't stop buzzing with notifications.",
+        0: "I've dreamt of opening this shop since I was a little girl. Let's prep our very first board!",
+        1: "Perfect start! Every board we sell brings us closer to that neon sign.",
         5: "Business is picking up! I might need to order more fancy honey jars soon.",
         10: "Milestone! We just got featured in the local paper. The 'Maya Special' is a hit!",
-        20: "I've finally saved enough for a top-of-the-line walk-in fridge. Look at all this space!",
-        50: "Can you believe it? Maya's Board Shop is now a local celebrity hotspot!"
+        20: "I've finally saved enough for a top-of-the-line walk-in fridge!"
     };
 
     const fillerStories = [
         "That cheese pairing was genius!", "The customer said this was the best bread they've had all year.",
-        "I love the way you arranged those fruits.", "We're becoming the talk of the neighborhood!",
-        "Quick work! My grandmother always said speed is the secret ingredient.",
-        "That garnish really made the board pop!", "The meats today are particularly fresh, good choice."
+        "We're becoming the talk of the neighborhood!", "Quick work! Speed is our secret ingredient."
     ];
 
     const pantryItems = [
@@ -187,25 +193,26 @@
     const levels = [];
     const types = ['cheese', 'meat', 'bread', 'fruit', 'sweet', 'olive', 'garnish', 'veg', 'nut', 'egg'];
     for(let i=1; i<=100; i++) {
-        let diff = Math.min(Math.floor(i / 10) + 2, 5); let r = {}; let shuffled = [...types].sort(() => 0.5 - Math.random());
+        let diff = Math.min(Math.floor(i / 10) + 2, 5);
+        let time = 18; if(i <= 5) time = 7; else if(i <= 10) time = 12;
+        let r = {}; let shuffled = [...types].sort(() => 0.5 - Math.random());
         for(let j=0; j<diff; j++) { r[shuffled[j]] = Math.floor(Math.random() * 2) + 1; }
-        levels.push({ t: 15, r: r, p: 20 + (i * 5) });
+        levels.push({ t: time, r: r, p: 20 + (i * 5) });
     }
 
     function showStory(mode = "prologue", earnings = 0) {
         const overlay = document.getElementById('story-overlay');
         const content = document.getElementById('story-content');
         overlay.style.display = 'flex';
-        
         if (mode === "prologue") {
             content.innerHTML = `${chefMayaTag}<h2>Grand Opening</h2><p>${milestones[0]}</p><button class="big-btn" onclick="startAudio(); showStory('level')">OPEN SHOP</button>`;
         } else if (lives <= 0) {
-            content.innerHTML = `<h2>Closing Time</h2><p>Maya: 'We did our best today. Let's try again tomorrow!'<br><br>Final Earnings: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RESTART JOURNEY</button>`;
+            content.innerHTML = `<h2>Closing</h2><p>Maya: 'We did our best!'<br>Final: $${bankAccount.toFixed(2)}</p><button class="big-btn" onclick="resetGame()">RESTART</button>`;
         } else if (mode === "success") {
             let story = milestones[currentLevel] || fillerStories[Math.floor(Math.random() * fillerStories.length)];
-            content.innerHTML = `${chefMayaTag}<h2>Excellent!</h2><p>${story}</p><p style="color:var(--success)">+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT ORDER</button>`;
+            content.innerHTML = `${chefMayaTag}<h2>Great!</h2><p>${story}</p><p style="color:var(--success)">+$${earnings.toFixed(2)}</p><button class="big-btn" onclick="playSound('cash'); showStory('level')">NEXT</button>`;
         } else if (mode === "fail") {
-            content.innerHTML = `${chefMayaTag}<h2>Oh No!</h2><p>That customer was in a hurry. Let's try to be a bit faster on the next one!</p><button class="big-btn" onclick="showStory('level')">CONTINUE</button>`;
+            content.innerHTML = `${chefMayaTag}<h2>Too Slow!</h2><p>The customer couldn't wait. Let's try again!</p><button class="big-btn" onclick="showStory('level')">CONTINUE</button>`;
         } else {
             overlay.style.display = 'none'; startLevel();
         }
@@ -233,6 +240,7 @@
         const d = levels[currentLevel]; timeLeft = d.t * 100;
         document.getElementById('level-num').innerText = (currentLevel + 1);
         document.getElementById('board').innerHTML = ''; renderTray();
+        document.getElementById('customer-story').innerText = customerStories[Math.floor(Math.random() * customerStories.length)];
         let dets = ""; for (let k in d.r) dets += `<span class="req-chip">${d.r[k]}x ${k.toUpperCase()}</span>`;
         document.getElementById('order-details').innerHTML = dets;
         startTimer();
@@ -243,13 +251,8 @@
         const txt = document.getElementById('timer-text');
         timerInterval = setInterval(() => {
             timeLeft--; txt.innerText = (timeLeft / 100).toFixed(2) + "s";
-            txt.style.color = timeLeft < 500 ? 'var(--danger)' : '#333';
-            if (timeLeft <= 0) { 
-                clearInterval(timerInterval); playSound('buzzer'); 
-                lives--; 
-                document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives); 
-                showStory('fail'); 
-            }
+            txt.style.color = timeLeft < 300 ? 'var(--danger)' : '#333';
+            if (timeLeft <= 0) { clearInterval(timerInterval); playSound('buzzer'); lives--; document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives); showStory('fail'); }
         }, 10);
     }
 
@@ -259,18 +262,8 @@
         let error = null;
         for (let k in d.r) { if ((counts[k] || 0) < d.r[k]) { error = `Need more ${k.toUpperCase()}!`; break; } if ((counts[k] || 0) > d.r[k]) { error = `Too much ${k.toUpperCase()}!`; break; } }
         if (!error) { for (let k in counts) { if (!d.r[k]) { error = `No ${k.toUpperCase()}!`; break; } } }
-
-        if (!error) {
-            clearInterval(timerInterval); playSound('ding');
-            let earned = d.p + (timeLeft/100); bankAccount += earned;
-            document.getElementById('score-display').innerText = bankAccount.toFixed(2);
-            currentLevel++; showStory("success", earned);
-        } else {
-            playSound('hint');
-            const btn = document.getElementById('serve-btn');
-            btn.style.background = 'var(--danger)'; btn.innerText = error;
-            setTimeout(() => { btn.innerText = "SERVE ✨"; btn.style.background = 'var(--primary)'; }, 1000);
-        }
+        if (!error) { clearInterval(timerInterval); playSound('ding'); let earned = d.p + (timeLeft/100); bankAccount += earned; document.getElementById('score-display').innerText = bankAccount.toFixed(2); currentLevel++; showStory("success", earned); } 
+        else { playSound('hint'); const btn = document.getElementById('serve-btn'); btn.style.background = 'var(--danger)'; btn.innerText = error; setTimeout(() => { btn.innerText = "SERVE ✨"; btn.style.background = 'var(--primary)'; }, 1000); }
     }
 
     function resetGame() { currentLevel = 0; bankAccount = 0; lives = 3; document.getElementById('score-display').innerText = "0.00"; document.getElementById('lives-display').innerText = "❤️❤️❤️"; showStory('prologue'); }
