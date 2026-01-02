@@ -1,103 +1,100 @@
-<script>
-  let currentLevel = 1;
-  
-  // 1. ALL ingredients available in the game
-  const ingredients = [
-    { emoji: '🧀', type: 'cheese' }, { emoji: '🧀', type: 'cheese' },
-    { emoji: '🍇', type: 'fruit' }, { emoji: '🍓', type: 'fruit' },
-    { emoji: '🍫', type: 'sweet' }, { emoji: '🍪', type: 'sweet' },
-    { emoji: '🥩', type: 'meat' }, { emoji: '🥓', type: 'meat' },
-    { emoji: '🥨', type: 'cracker' }, { emoji: '🥜', type: 'nut' }
-  ];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Charcuterie Challenge</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <style>
+        body { font-family: sans-serif; background: #fdfaf5; text-align: center; margin: 0; padding: 10px; }
+        .board { width: 280px; min-height: 180px; background: #d2b48c; border: 8px solid #bc9d70; border-radius: 40px; margin: 20px auto; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 10px; padding: 10px; }
+        .tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 15px; background: #fff; border-radius: 20px; }
+        .item { font-size: 40px; cursor: pointer; user-select: none; }
+        .order-card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 8px solid #7a5cfa; margin: 10px; }
+        button { background: #7a5cfa; color: white; border: none; padding: 15px 30px; border-radius: 25px; font-weight: bold; font-size: 16px; margin-top: 10px; }
+    </style>
+</head>
+<body>
 
-  const levels = [
-    { title: "The Quick Snack", req: { cheese: 1, fruit: 1, cracker: 1 } },
-    { title: "Date Night Platter", req: { cheese: 2, meat: 1, fruit: 1, sweet: 1 } },
-    { title: "The Party Board", req: { cheese: 2, meat: 2, cracker: 2, nut: 1, fruit: 1 } }
-  ];
+    <div class="order-card">
+        <div id="level-num">Level 1</div>
+        <b id="order-title">The Quick Snack</b>
+        <div id="order-details">1 Cheese, 1 Fruit, 1 Cracker</div>
+    </div>
 
-  function setupLevel() {
-    // Determine level (loop back to last level if they go beyond level 3)
-    const levelData = levels[Math.min(currentLevel - 1, levels.length - 1)];
-    
-    document.getElementById('order-title').innerHTML = `<b>ORDER: ${levelData.title}</b>`;
-    document.getElementById('level').innerText = currentLevel;
-    
-    // Clear the board and tray for the new level
-    const tray = document.getElementById('tray');
-    const board = document.getElementById('board');
-    tray.innerHTML = '';
-    board.innerHTML = '';
-    
-    // 2. IMPORTANT: This loop now correctly places ALL ingredients into the tray
-    ingredients.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.innerHTML = item.emoji;
-      div.dataset.type = item.type;
-      
-      // Tap to move logic
-      div.onclick = () => {
-        if (div.parentElement.id === 'tray') {
-          board.appendChild(div);
-          playTapSound(0.1); // Mini haptic-style sound
-        } else {
-          tray.appendChild(div);
+    <div class="board" id="board"></div>
+    <div class="tray" id="tray"></div>
+
+    <button onclick="submitBoard()">Serve Platter</button>
+    <div id="msg" style="margin-top:10px; font-weight:bold;"></div>
+
+    <script>
+        let currentLevel = 0;
+        const allItems = [
+            { e: '🧀', t: 'cheese' }, { e: '🧀', t: 'cheese' },
+            { e: '🍇', t: 'fruit' }, { e: '🍓', t: 'fruit' },
+            { e: '🥩', t: 'meat' }, { e: '🥓', t: 'meat' },
+            { e: '🥨', t: 'cracker' }, { e: '🥨', t: 'cracker' },
+            { e: '🍫', t: 'sweet' }, { e: '🥜', t: 'nut' }
+        ];
+
+        const levels = [
+            { title: "Quick Snack", req: { cheese: 1, fruit: 1, cracker: 1 } },
+            { title: "Date Night", req: { cheese: 2, meat: 1, fruit: 1 } },
+            { title: "The Party", req: { cheese: 2, meat: 2, cracker: 2, nut: 1 } }
+        ];
+
+        function init() {
+            const data = levels[Math.min(currentLevel, levels.length - 1)];
+            document.getElementById('level-num').innerText = "Level " + (currentLevel + 1);
+            document.getElementById('order-title').innerText = data.title;
+            
+            let details = "";
+            for (let k in data.req) details += `${data.req[k]} ${k} `;
+            document.getElementById('order-details').innerText = details;
+
+            const tray = document.getElementById('tray');
+            const board = document.getElementById('board');
+            tray.innerHTML = ''; board.innerHTML = '';
+
+            allItems.forEach(item => {
+                const d = document.createElement('div');
+                d.className = 'item';
+                d.innerHTML = item.e;
+                d.onclick = () => {
+                    if (d.parentElement.id === 'tray') board.appendChild(d);
+                    else tray.appendChild(d);
+                };
+                d.setAttribute('data-type', item.t);
+                tray.appendChild(d);
+            });
         }
-      };
-      tray.appendChild(div);
-    });
 
-    // Generate the requirement text
-    let reqText = "";
-    for (let key in levelData.req) {
-      reqText += `• ${levelData.req[key]} ${key.toUpperCase()} `;
-    }
-    document.getElementById('order-details').innerText = reqText;
-  }
+        function submitBoard() {
+            const data = levels[Math.min(currentLevel, levels.length - 1)];
+            const items = document.querySelectorAll('#board .item');
+            let counts = {};
+            items.forEach(i => {
+                let t = i.getAttribute('data-type');
+                counts[t] = (counts[t] || 0) + 1;
+            });
 
-  // A simple "Beep" sound using the browser's synthesizer (No files needed!)
-  function playTapSound(vol) {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, ctx.currentTime);
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.1);
-  }
+            let win = true;
+            for (let k in data.req) {
+                if ((counts[k] || 0) < data.req[k]) win = false;
+            }
 
-  function submitBoard() {
-    const levelData = levels[Math.min(currentLevel - 1, levels.length - 1)];
-    const onBoard = document.querySelectorAll('#board .item');
-    let counts = {};
-    
-    onBoard.forEach(item => {
-      counts[item.dataset.type] = (counts[item.dataset.type] || 0) + 1;
-    });
+            if (win) {
+                document.getElementById('msg').innerText = "✅ Perfect!";
+                currentLevel++;
+                setTimeout(() => { document.getElementById('msg').innerText = ""; init(); }, 1500);
+            } else {
+                document.getElementById('msg').innerText = "❌ Missing items!";
+            }
+        }
 
-    let pass = true;
-    for (let key in levelData.req) {
-      if ((counts[key] || 0) < levelData.req[key]) pass = false;
-    }
-
-    if (pass) {
-      document.getElementById('msg').innerText = "✅ Perfect! Next Level...";
-      currentLevel++;
-      playTapSound(0.5); // Louder sound for success
-      setTimeout(() => {
-        document.getElementById('msg').innerText = "";
-        setupLevel();
-      }, 1500);
-    } else {
-      document.getElementById('msg').innerText = "❌ Missing something! Check the list.";
-    }
-  }
-
-  // Initialize the first level
-  setupLevel();
-</script>
+        init();
+    </script>
+</body>
+</html>
