@@ -9,6 +9,8 @@
         
         :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ecc71; --paper: #fffcf2; }
         
+        * { -webkit-tap-highlight-color: transparent; }
+
         body { font-family: 'Fredoka One', cursive; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
         
         #game-container { width: 100%; height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; box-sizing: border-box; }
@@ -27,8 +29,9 @@
         #order-details { font-family: 'Quicksand', sans-serif; font-size: 17px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px; }
         .req-chip { background: #f0edff; padding: 4px 10px; border-radius: 10px; color: var(--primary); border: 1px solid #dcd3ff; }
 
+        /* Board CSS: No animations or transitions that cause movement */
         .play-area { display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center; }
-        .board { width: 220px; min-height: 140px; background: var(--wood); border: 10px solid var(--bark); border-radius: 45px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px; padding: 10px; box-shadow: inset 0 0 25px rgba(0,0,0,0.5); }
+        .board { width: 220px; min-height: 140px; background: var(--wood); border: 10px solid var(--bark); border-radius: 45px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px; padding: 10px; box-shadow: inset 0 0 25px rgba(0,0,0,0.5); transform: none !important; }
 
         .tray { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; width: 100%; background: white; padding: 10px; border-radius: 20px; box-shadow: 0 6px 0 #ddd; box-sizing: border-box; border: 2px solid #eee; }
         .item { font-size: 32px; cursor: pointer; user-select: none; }
@@ -39,6 +42,9 @@
         
         .money-text { color: var(--success); font-size: 26px; }
         p.story-p { font-family: 'Quicksand', sans-serif; font-size: 18px; font-weight: 700; color: #444; line-height: 1.4; margin: 10px 0; }
+
+        /* Timer Text: Static color only, no motion */
+        #timer-text { font-size: 20px; font-weight: 900; transition: none; transform: none !important; }
     </style>
 </head>
 <body>
@@ -65,8 +71,8 @@
     <div class="play-area">
         <div class="board" id="board"></div>
         <div class="egg-timer-container" style="text-align:center;">
-            <div id="egg-timer" style="font-size:45px">⏲️</div>
-            <div id="timer-text" style="font-size:20px; font-weight:900;">0:00</div>
+            <div id="egg-timer" style="font-size:45px; transform: none !important;">⏲️</div>
+            <div id="timer-text">0:00</div>
         </div>
     </div>
 
@@ -185,7 +191,7 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             txt.innerText = (timeLeft / 100).toFixed(2) + "s";
-            // MOVED TO SIMPLE TEXT COLOR CHANGE ONLY
+            // Removed all rotation/jitter code. Only color changes.
             if (timeLeft < 500) {
                 txt.style.color = 'var(--danger)';
             } else {
