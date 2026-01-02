@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Charcuterie Rush</title>
+    <title>Charcuterie Rush Pro</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
-        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; }
+        :root { --primary: #7a5cfa; --wood: #d2b48c; --bark: #bc9d70; --danger: #ff4757; --success: #2ed573; }
         body { font-family: system-ui, sans-serif; background: #fdfaf5; text-align: center; margin: 0; padding: 10px; overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; }
         
         .header { width: 100%; display: flex; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
-        .lvl-badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; }
+        .lvl-badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
 
-        .order-card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 8px solid var(--primary); width: 90%; margin: 10px 0; }
-        #order-details { font-size: 14px; color: #666; font-weight: bold; margin-top: 5px; }
+        .order-card { background: white; padding: 12px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 8px solid var(--primary); width: 90%; margin: 5px 0; min-height: 80px; }
+        #order-details { font-size: 13px; color: #444; font-weight: 700; margin-top: 5px; line-height: 1.4; }
 
-        .board { width: 280px; min-height: 180px; background: var(--wood); border: 10px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 8px; padding: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); margin: 10px 0; }
+        .board { width: 300px; min-height: 200px; background: var(--wood); border: 10px solid var(--bark); border-radius: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 6px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); margin: 10px 0; }
 
-        .tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 15px; background: rgba(255,255,255,0.6); border-radius: 25px; width: 95%; margin-top: auto; }
-        .item { font-size: 40px; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .item:active { transform: scale(1.3); }
+        .tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 12px; background: rgba(255,255,255,0.6); border-radius: 25px; width: 95%; margin-top: auto; max-height: 35vh; overflow-y: auto; }
+        .item { font-size: 36px; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .item:active { transform: scale(1.4); }
 
-        button { background: var(--primary); color: white; border: none; padding: 16px 40px; border-radius: 30px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 0 #5a3ec7; margin: 20px 0; width: 80%; }
-        #timer-bar { width: 90%; height: 8px; background: #ddd; border-radius: 4px; margin: 5px 0; overflow: hidden; }
-        #timer-fill { width: 100%; height: 100%; background: var(--primary); transition: width 1s linear; }
-        #msg { font-weight: bold; color: var(--primary); height: 20px; }
+        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 35px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 0 #5a3ec7; margin: 15px 0; width: 85%; }
+        #timer-bar { width: 90%; height: 10px; background: #ddd; border-radius: 5px; margin: 5px 0; overflow: hidden; border: 1px solid #ccc; }
+        #timer-fill { width: 100%; height: 100%; background: var(--success); transition: width 1s linear; }
+        #msg { font-weight: bold; color: var(--primary); height: 20px; margin-bottom: 5px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-weight: 900;">🧀 RUSH</div>
+        <div style="font-weight: 900; letter-spacing: -1px;">CHARCUTERIE <span style="color:var(--primary)">RUSH</span></div>
         <div class="lvl-badge" id="lvl-display">Level 1</div>
     </div>
 
@@ -53,31 +53,33 @@
         let timeLeft;
         let timerInterval;
 
-        const allItems = [
+        const pantry = [
             { e: '🧀', t: 'cheese' }, { e: '🧀', t: 'cheese' }, { e: '🧀', t: 'cheese' },
-            { e: '🍇', t: 'fruit' }, { e: '🍓', t: 'fruit' }, { e: '🍊', t: 'fruit' },
-            { e: '🥩', t: 'meat' }, { e: '🥓', t: 'meat' }, { e: '🥨', t: 'cracker' },
-            { e: '🍞', t: 'cracker' }, { e: '🍫', t: 'sweet' }, { e: '🥜', t: 'nut' }, { e: '🌿', t: 'garnish' }
+            { e: '🥩', t: 'meat' }, { e: '🍕', t: 'meat' }, { e: '🥓', t: 'meat' },
+            { e: '🥨', t: 'cracker' }, { e: '🥖', t: 'cracker' }, { e: '🍞', t: 'cracker' },
+            { e: '🍇', t: 'fruit' }, { e: '🍓', t: 'fruit' }, { e: '🫐', t: 'fruit' },
+            { e: '🍫', t: 'sweet' }, { e: '🍪', t: 'sweet' },
+            { e: '🥜', t: 'nut' }, { e: '🫒', t: 'olive' }, { e: '🌿', t: 'garnish' }
         ];
 
         const levels = [
-            { title: "Quick Snack", time: 15, req: { cheese: 1, cracker: 1 } },
-            { title: "Fruit Medley", time: 12, req: { cheese: 1, fruit: 2 } },
-            { title: "Small Plate", time: 12, req: { cheese: 1, meat: 1, cracker: 1 } },
-            { title: "The Duo", time: 10, req: { cheese: 2, cracker: 2 } },
-            { title: "Protein Punch", time: 10, req: { meat: 2, cheese: 1, nut: 1 } },
-            { title: "Sweet Tooth", time: 8, req: { sweet: 1, fruit: 2, cheese: 1 } },
-            { title: "Party Prep", time: 8, req: { cheese: 2, meat: 1, cracker: 2 } },
-            { title: "The Garnish", time: 7, req: { garnish: 1, cheese: 2, fruit: 1 } },
-            { title: "Balanced Board", time: 7, req: { cheese: 1, meat: 1, fruit: 1, cracker: 1, sweet: 1 } },
-            { title: "MASTER CHEF", time: 6, req: { cheese: 2, meat: 2, cracker: 2, nut: 1 } }
+            { title: "The Appetizer", time: 10, req: { cheese: 1, cracker: 1 } },
+            { title: "Picnic Box", time: 12, req: { cheese: 1, fruit: 2, meat: 1 } },
+            { title: "Solo Treat", time: 14, req: { sweet: 1, fruit: 1, cheese: 1, cracker: 1 } },
+            { title: "Mediterranean Duo", time: 16, req: { olive: 2, cracker: 2, cheese: 1 } },
+            { title: "Charcuterie 101", time: 18, req: { meat: 2, cheese: 2, cracker: 1 } },
+            { title: "The Board for Two", time: 22, req: { meat: 2, cheese: 2, fruit: 2, cracker: 1 } },
+            { title: "Salty & Savory", time: 25, req: { meat: 2, olive: 2, nut: 1, cheese: 2 } },
+            { title: "The Dessert Board", time: 28, req: { sweet: 3, fruit: 2, nut: 1, garnish: 1 } },
+            { title: "Party Platter", time: 32, req: { meat: 3, cheese: 3, cracker: 2, fruit: 2, nut: 1 } },
+            { title: "Grand Gala Event", time: 40, req: { meat: 3, cheese: 3, cracker: 3, fruit: 3, olive: 2, garnish: 1 } }
         ];
 
         function init() {
             if (currentLevel >= levels.length) { showVictory(); return; }
             const data = levels[currentLevel];
             
-            document.getElementById('lvl-display').innerText = "Level " + (currentLevel + 1);
+            document.getElementById('lvl-display').innerText = "LEVEL " + (currentLevel + 1);
             document.getElementById('order-title').innerText = data.title;
             
             let details = "";
@@ -88,14 +90,15 @@
             const board = document.getElementById('board');
             tray.innerHTML = ''; board.innerHTML = '';
 
-            allItems.forEach(item => {
+            // Shuffle pantry for variation
+            const shuffled = [...pantry].sort(() => Math.random() - 0.5);
+            shuffled.forEach(item => {
                 const d = document.createElement('div');
                 d.className = 'item';
                 d.innerHTML = item.e;
                 d.onclick = () => {
                     if (d.parentElement.id === 'tray') board.appendChild(d);
                     else tray.appendChild(d);
-                    if (window.navigator.vibrate) window.navigator.vibrate(10); // Tiny haptic
                 };
                 d.setAttribute('data-type', item.t);
                 tray.appendChild(d);
@@ -110,7 +113,7 @@
             const fill = document.getElementById('timer-fill');
             fill.style.transition = 'none';
             fill.style.width = '100%';
-            fill.style.background = 'var(--primary)';
+            fill.style.background = 'var(--success)';
 
             setTimeout(() => {
                 fill.style.transition = `width ${seconds}s linear`;
@@ -119,11 +122,10 @@
 
             timerInterval = setInterval(() => {
                 timeLeft--;
-                if (timeLeft <= 3) fill.style.background = 'var(--danger)';
+                if (timeLeft <= 5) fill.style.background = 'var(--danger)';
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
-                    alert("Time's up! Back to Level 1.");
+                    alert("Order Expired! The customers left. Back to Level 1!");
                     currentLevel = 0;
                     init();
                 }
@@ -146,19 +148,24 @@
 
             if (win) {
                 clearInterval(timerInterval);
-                document.getElementById('msg').innerText = "✅ PERFECT!";
-                if (window.navigator.vibrate) window.navigator.vibrate(50);
+                document.getElementById('msg').innerText = "✨ ORDER SERVED! ✨";
                 currentLevel++;
-                setTimeout(() => { document.getElementById('msg').innerText = ""; init(); }, 1000);
+                setTimeout(() => { document.getElementById('msg').innerText = ""; init(); }, 1200);
             } else {
-                document.getElementById('msg').innerText = "❌ WRONG!";
-                if (window.navigator.vibrate) window.navigator.vibrate(200);
+                document.getElementById('msg').innerText = "❌ MISSING INGREDIENTS!";
+                setTimeout(() => { document.getElementById('msg').innerText = ""; }, 1000);
             }
         }
 
         function showVictory() {
             clearInterval(timerInterval);
-            document.body.innerHTML = `<h1>🏆 MASTER!</h1><button onclick="location.reload()">PLAY AGAIN</button>`;
+            document.body.innerHTML = `
+                <div style="margin-top:20vh">
+                    <h1 style="font-size:3rem">👨‍🍳</h1>
+                    <h1>EXECUTIVE CHEF!</h1>
+                    <p>You conquered the Rush!</p>
+                    <button onclick="location.reload()">REPLAY GAME</button>
+                </div>`;
         }
 
         init();
