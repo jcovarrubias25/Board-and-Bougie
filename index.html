@@ -9,14 +9,12 @@
         
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfaf5; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; }
         
-        #game-container { width: 100%; height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
+        #game-container { width: 100%; height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 15px; box-sizing: border-box; }
         
-        /* Story Overlay */
         #story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .story-box { background: var(--paper); padding: 20px; border-radius: 20px; border-top: 10px solid var(--primary); width: 100%; max-width: 360px; text-align: center; position: relative; }
+        .story-box { background: var(--paper); padding: 20px; border-radius: 20px; border-top: 10px solid var(--primary); width: 100%; max-width: 360px; text-align: center; }
         
-        /* Chef Maya Character */
-        .chef-avatar { font-size: 80px; margin-bottom: 10px; display: block; }
+        .chef-avatar { font-size: 80px; margin-bottom: 5px; display: block; }
         .chef-tag { font-weight: 900; color: var(--primary); font-size: 14px; text-transform: uppercase; margin-bottom: 10px; display: block; }
 
         .header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
@@ -24,12 +22,16 @@
         .order-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 10px solid var(--primary); width: 100%; }
         #order-details { font-size: 12px; color: #111; font-weight: 800; margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
         .req-chip { background: #f0f0f0; padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; }
-        
-        /* Timer Bar */
-        #timer-bar { width: 100%; height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 2px solid #000; margin: 10px 0; }
-        #timer-fill { width: 100%; height: 100%; background: var(--success); }
 
-        .board { width: 280px; min-height: 140px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+        /* Game Area with Egg Timer */
+        .play-area { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: center; position: relative; }
+        
+        .board { width: 250px; min-height: 140px; background: var(--wood); border: 8px solid var(--bark); border-radius: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 5px; padding: 10px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+
+        .egg-timer-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; }
+        #egg-timer { font-size: 40px; transition: transform 0.1s; }
+        #timer-text { font-weight: 900; font-size: 14px; margin-top: 5px; font-variant-numeric: tabular-nums; }
+
         .tray { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; width: 100%; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 20px; }
         
         .item { font-size: 42px; cursor: pointer; user-select: none; transition: transform 0.1s; }
@@ -37,6 +39,8 @@
         
         button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 45px; font-weight: 900; font-size: 20px; box-shadow: 0 6px 0 #5a3ec7; width: 100%; cursor: pointer; }
         .leaderboard { text-align: left; max-height: 100px; overflow-y: auto; font-size: 12px; background: #eee; padding: 10px; border-radius: 10px; margin: 10px 0; }
+        
+        .money-text { color: #2ecc71; font-weight: 900; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -47,21 +51,26 @@
 
 <div id="game-container">
     <div class="header">
-        <div style="font-weight: 900; font-size: 1.2rem;">THE RUSTIC BOARD</div>
+        <div style="font-weight: 900; font-size: 1.1rem;">THE RUSTIC BOARD</div>
         <div id="lives-display">❤️❤️❤️</div>
     </div>
 
     <div class="order-card">
-        <div style="display: flex; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <b id="order-title">Level Loading...</b>
-            <span style="font-weight: 900;"><span id="score-display">0</span> points</span>
+            <span class="money-text">$<span id="score-display">0.00</span></span>
         </div>
         <div id="order-details"></div>
     </div>
 
-    <div id="timer-bar"><div id="timer-fill"></div></div>
+    <div class="play-area">
+        <div class="board" id="board"></div>
+        <div class="egg-timer-container">
+            <div id="egg-timer">⏲️</div>
+            <div id="timer-text">0:00</div>
+        </div>
+    </div>
 
-    <div class="board" id="board"></div>
     <div class="tray" id="tray"></div>
 
     <button onclick="submitBoard()">SERVE CLIENT ✨</button>
@@ -69,46 +78,42 @@
 
 <script>
     let currentLevel = 0;
-    let score = 0;
+    let bankAccount = 0.00;
     let lives = 3;
-    let timerInterval, timeLeft, maxTime;
-    let gameStarted = false;
+    let timerInterval, timeLeft;
+    const chefMaya = '<span class="chef-avatar">👩🏾‍🍳</span><span class="chef-tag">Chef Maya</span>';
 
     const pantry = [
-        {e:'🧀', t:'cheese', q:2}, {e:'🥩', t:'meat', q:3}, {e:'🥓', t:'meat', q:2}, {e:'🍗', t:'meat', q:3}, {e:'🍕', t:'meat', q:1}, {e:'🥚', t:'egg', q:3},
-        {e:'🥨', t:'cracker', q:1}, {e:'🥖', t:'cracker', q:2}, {e:'🥐', t:'cracker', q:3}, {e:'🍞', t:'cracker', q:2}, {e:'🍇', t:'fruit', q:2}, {e:'🍓', t:'fruit', q:2},
-        {e:'🫐', t:'fruit', q:3}, {e:'🍍', t:'fruit', q:3}, {e:'🍒', t:'fruit', q:3}, {e:'🍫', t:'sweet', q:2}, {e:'🍪', t:'sweet', q:2}, {e:'🍩', t:'sweet', q:2},
-        {e:'🍬', t:'sweet', q:1}, {e:'🥜', t:'nut', q:2}, {e:'🌰', t:'nut', q:2}, {e:'🫒', t:'olive', q:3}, {e:'🥒', t:'olive', q:2}, {e:'🌿', t:'garnish', q:3},
-        {e:'🍃', t:'garnish', q:3}, {e:'🥕', t:'veg', q:2}, {e:'🍅', t:'veg', q:2}, {e:'🌽', t:'veg', q:2}, {e:'🌶️', t:'veg', q:2}, {e:'🧀', t:'cheese', q:2}
+        {e:'🧀', t:'cheese', v:2.50}, {e:'🥩', t:'meat', v:4.00}, {e:'🥓', t:'meat', v:3.00}, {e:'🍗', t:'meat', v:3.50}, {e:'🍕', t:'meat', v:5.00}, {e:'🥚', t:'egg', v:1.50},
+        {e:'🥨', t:'cracker', v:1.00}, {e:'🥖', t:'cracker', v:1.50}, {e:'🥐', t:'cracker', v:2.00}, {e:'🍞', t:'cracker', v:1.00}, {e:'🍇', t:'fruit', v:2.00}, {e:'🍓', t:'fruit', v:2.50},
+        {e:'🫐', t:'fruit', v:3.00}, {e:'🍍', t:'fruit', q:3.50}, {e:'🍒', t:'fruit', v:3.00}, {e:'🍫', t:'sweet', v:2.50}, {e:'🍪', t:'sweet', v:1.50}, {e:'🍩', t:'sweet', v:2.00},
+        {e:'🍬', t:'sweet', v:0.50}, {e:'🥜', t:'nut', v:2.00}, {e:'🌰', t:'nut', v:2.00}, {e:'🫒', t:'olive', v:3.00}, {e:'🥒', t:'olive', v:2.00}, {e:'🌿', t:'garnish', v:1.00},
+        {e:'🍃', t:'garnish', v:1.00}, {e:'🥕', t:'veg', v:1.50}, {e:'🍅', t:'veg', v:1.50}, {e:'🌽', t:'veg', v:1.50}, {e:'🌶️', t:'veg', v:1.50}, {e:'🧀', t:'cheese', v:2.50}
     ];
 
     const levels = [
-        { title: "Grand Opening", customer: "Mrs. Higgins", note: "Welcome to the neighborhood, Chef Maya! I'd like a simple cheese and cracker board.", time: 7, req: { cheese: 1, cracker: 1 } },
-        { title: "The Office Perk", customer: "Steve", note: "Chef, the team is working late. We need 2 meats and 1 fruit for energy!", time: 9, req: { meat: 2, fruit: 1 } },
-        { title: "Gym Snack", customer: "Coach Brad", note: "Maya! I need a protein punch. Get me an egg and some meat!", time: 7, req: { meat: 1, egg: 1 } },
-        { title: "The Critic's Visit", customer: "Mr. Sterling", note: "I have high standards. I require 2 olives, 2 cheeses, and 1 garnish.", time: 15, req: { olive: 2, cheese: 2, garnish: 1 } }
+        { title: "Grand Opening", customer: "Mrs. Higgins", note: "Welcome, Chef Maya! I'd like a simple cheese and cracker board.", time: 8, req: { cheese: 1, cracker: 1 }, pay: 15 },
+        { title: "Office Perk", customer: "Steve", note: "The team is working late! We need 2 meats and 1 fruit.", time: 10, req: { meat: 2, fruit: 1 }, pay: 25 },
+        { title: "Gym Snack", customer: "Coach Brad", note: "Maya! Protein punch, please. An egg and some meat!", time: 8, req: { meat: 1, egg: 1 }, pay: 20 },
+        { title: "The Critic", customer: "Mr. Sterling", note: "I have high standards. 2 olives, 2 cheeses, and a garnish.", time: 15, req: { olive: 2, cheese: 2, garnish: 1 }, pay: 50 }
     ];
 
-    const chefMaya = '<span class="chef-avatar">👩🏾‍🍳</span><span class="chef-tag">Chef Maya</span>';
-
-    function showStory(mode = "prologue", perfect = false) {
+    function showStory(mode = "prologue", earnings = 0) {
         const overlay = document.getElementById('story-overlay');
         const content = document.getElementById('story-content');
         overlay.style.display = 'flex';
 
         if (mode === "prologue") {
-            content.innerHTML = `${chefMaya}<h2>Welcome to 'The Rustic Board'!</h2><p>I've finally opened my own business. I need to serve my clients fast and accurately to build my reputation. Ready to help me prep?</p><button onclick="showStory('level')">Let's Get Started!</button>`;
+            content.innerHTML = `${chefMaya}<h2>The Grand Opening!</h2><p>I've finally opened my shop. Let's make some money and grow this business!</p><button onclick="showStory('level')">Start My Shift</button>`;
         } else if (lives <= 0) {
-            saveScore();
-            content.innerHTML = `${chefMaya}<h2>Oh no!</h2><p>We lost too many clients. Let's take a break and try again later.</p>${getLeaderboardHTML()}<button onclick="resetGame()">Try Again</button>`;
+            content.innerHTML = `${chefMaya}<h2>Business Closed...</h2><p>We lost too many customers today. Let's try again tomorrow.</p><button onclick="resetGame()">Reopen Shop</button>`;
         } else if (mode === "success") {
-            content.innerHTML = `${chefMaya}<h2>${perfect ? '✨ Perfect Selection! ✨' : 'Great Job!'}</h2><p>The client loved it! We earned ${score} points so far.</p><button onclick="showStory('level')">Next Client ➡️</button>`;
+            content.innerHTML = `${chefMaya}<h2>Success!</h2><p>You just earned <b>$${earnings.toFixed(2)}</b> from that order!</p><button onclick="showStory('level')">Next Customer</button>`;
         } else if (currentLevel < levels.length) {
             const data = levels[currentLevel];
-            content.innerHTML = `${chefMaya}<h3>Message from ${data.customer}</h3><p>"${data.note}"</p><button onclick="startLevel()">Accept Order</button>`;
+            content.innerHTML = `${chefMaya}<h3>Customer: ${data.customer}</h3><p>"${data.note}"</p><button onclick="startLevel()">Start Prep</button>`;
         } else {
-            saveScore();
-            content.innerHTML = `${chefMaya}<h2>We Made It!</h2><p>Our business is a success! Final Score: ${score} points.</p>${getLeaderboardHTML()}<button onclick="resetGame()">Start New Career</button>`;
+            content.innerHTML = `${chefMaya}<h2>Shift Over!</h2><p>Total Business Earnings: $${bankAccount.toFixed(2)}</p><button onclick="resetGame()">New Week</button>`;
         }
     }
 
@@ -120,8 +125,8 @@
             d.onclick = () => {
                 const bItem = d.cloneNode(true);
                 bItem.dataset.type = item.t;
-                bItem.dataset.quality = item.q;
-                bItem.onclick = () => bItem.remove(); // Tap on board to return
+                bItem.dataset.val = item.v;
+                bItem.onclick = () => bItem.remove();
                 document.getElementById('board').appendChild(bItem);
                 if(navigator.vibrate) navigator.vibrate(10);
             };
@@ -132,7 +137,7 @@
     function startLevel() {
         document.getElementById('story-overlay').style.display = 'none';
         const data = levels[currentLevel];
-        maxTime = data.time * 100; timeLeft = maxTime;
+        timeLeft = data.time * 100;
         document.getElementById('order-title').innerText = data.title;
         document.getElementById('board').innerHTML = '';
         renderTray();
@@ -144,13 +149,22 @@
 
     function startTimer() {
         clearInterval(timerInterval);
-        const fill = document.getElementById('timer-fill');
+        const timerText = document.getElementById('timer-text');
+        const eggIcon = document.getElementById('egg-timer');
         timerInterval = setInterval(() => {
             timeLeft--;
-            const pct = (timeLeft / maxTime) * 100;
-            fill.style.width = pct + '%';
-            if (pct < 30) fill.style.background = 'var(--danger)';
-            else fill.style.background = 'var(--success)';
+            let seconds = (timeLeft / 100).toFixed(2);
+            timerText.innerText = seconds + "s";
+            
+            // Jitter effect as time gets low
+            if (timeLeft < 300) {
+                eggIcon.style.transform = `rotate(${Math.sin(timeLeft) * 10}deg)`;
+                timerText.style.color = 'var(--danger)';
+            } else {
+                eggIcon.style.transform = 'rotate(0deg)';
+                timerText.style.color = '#000';
+            }
+
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 lives--;
@@ -163,41 +177,31 @@
     function submitBoard() {
         const data = levels[currentLevel];
         const items = document.querySelectorAll('#board .item');
-        let counts = {}, totalQuality = 0, itemCount = 0;
+        let counts = {}, boardValue = 0;
+        
         items.forEach(i => {
             let t = i.dataset.type;
             counts[t] = (counts[t] || 0) + 1;
-            totalQuality += parseInt(i.dataset.quality || 0);
-            itemCount++;
+            boardValue += parseFloat(i.dataset.val || 0);
         });
+
         let win = true;
         for (let k in data.req) { if ((counts[k] || 0) < data.req[k]) win = false; }
+
         if (win) {
             clearInterval(timerInterval);
-            let perfectReq = Object.values(data.req).reduce((a, b) => a + b, 0);
-            let isPerfect = (itemCount === perfectReq);
-            score += (Math.floor((timeLeft/maxTime)*100) + (isPerfect ? 50 : 0) + (totalQuality * 5));
-            document.getElementById('score-display').innerText = score;
+            // Earnings = Base Pay + Speed Bonus + Ingredient Value
+            let speedBonus = (timeLeft / 100) * 0.50;
+            let totalEarned = data.pay + speedBonus + (boardValue * 0.1);
+            bankAccount += totalEarned;
+            document.getElementById('score-display').innerText = bankAccount.toFixed(2);
             currentLevel++;
-            showStory("success", isPerfect);
+            showStory("success", totalEarned);
         }
     }
 
-    function saveScore() {
-        let ts = JSON.parse(localStorage.getItem('rusticScores') || "[]");
-        ts.push({date: new Date().toLocaleDateString(), score: score});
-        ts.sort((a,b) => b.score - a.score);
-        localStorage.setItem('rusticScores', JSON.stringify(ts.slice(0, 10)));
-    }
+    function resetGame() { currentLevel = 0; bankAccount = 0.00; lives = 3; document.getElementById('score-display').innerText = "0.00"; document.getElementById('lives-display').innerText = "❤️".repeat(3); showStory('prologue'); }
 
-    function getLeaderboardHTML() {
-        let ts = JSON.parse(localStorage.getItem('rusticScores') || "[]");
-        return `<div class="leaderboard"><b>TOP SCORES:</b><br>${ts.map(s => `${s.score} pts`).join('<br>') || 'None'}</div>`;
-    }
-
-    function resetGame() { currentLevel = 0; score = 0; lives = 3; document.getElementById('score-display').innerText = "0"; document.getElementById('lives-display').innerText = "❤️".repeat(3); showStory('prologue'); }
-
-    // Kickoff
     showStory('prologue');
 </script>
 </body>
